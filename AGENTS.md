@@ -217,6 +217,31 @@ Uma funcionalidade só está pronta quando:
 - Não versionar segredos, arquivos de build, chaves de assinatura, backups pessoais ou dados reais de usuários.
 - Manter `.gitignore` adequado para Android, IDE e arquivos locais.
 
+### Regra obrigatória: commit e push após alterações na build
+
+Sempre que uma alteração afetar o código, recursos, testes, configuração Gradle, versão, documentação de release ou qualquer outro arquivo que participe da build do ResetLife, o fluxo obrigatório é:
+
+1. verificar `git status`, branch, remoto e arquivos impactados;
+2. executar os testes e a build aplicáveis antes de publicar;
+3. revisar os arquivos staged, garantindo que não haja segredos, credenciais, backups pessoais ou artefatos gerados;
+4. criar um commit convencional com a alteração completa;
+5. executar `git push origin HEAD` imediatamente após o commit;
+6. confirmar no remoto o SHA do commit publicado e verificar que a árvore local ficou limpa.
+
+O agente não deve encerrar uma alteração de build apenas com arquivos locais ou dizer que o push foi concluído sem verificar o remoto. Se testes/build falharem, não houver autenticação/remoto, ou o push falhar, deve corrigir o problema ou informar claramente o bloqueio, preservando o SHA do commit local quando ele já tiver sido criado. Não usar `force push` nem reescrever histórico sem autorização explícita. Gustavo pode suspender essa regra para uma alteração específica mediante instrução explícita.
+
+Comandos mínimos de publicação:
+
+```bash
+./gradlew :app:testDebugUnitTest :app:assembleDebug
+git add <arquivos-intencionais>
+git commit -m "tipo: resumo curto"
+git push origin HEAD
+git status --short --branch
+git rev-parse HEAD
+git ls-remote origin HEAD
+```
+
 ---
 
 ## Comunicação com Gustavo
