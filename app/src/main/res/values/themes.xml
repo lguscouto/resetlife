@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.ResetLife" parent="android:style/Theme.Material.Light.NoActionBar" />
+</resources>

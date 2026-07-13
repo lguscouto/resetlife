@@ -1,0 +1,23 @@
+package br.com.resetlife
+
+import android.app.Application
+import androidx.room.Room
+import br.com.resetlife.data.local.ResetLifeDatabase
+import br.com.resetlife.data.organize.OrganizeRepository
+import br.com.resetlife.data.today.PriorityRepository
+
+class ResetLifeApplication : Application() {
+    private val database by lazy {
+        Room.databaseBuilder(
+            this,
+            ResetLifeDatabase::class.java,
+            "resetlife.db",
+        ).build()
+    }
+
+    val priorityStore by lazy { PriorityRepository(database.priorityDao()) }
+
+    val organizeStore by lazy {
+        OrganizeRepository(database.projectDao(), database.taskDao())
+    }
+}
