@@ -57,6 +57,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onPriorityInputChanged = todayViewModel::onPriorityInputChanged,
                 onAddPriority = todayViewModel::addPriority,
                 onCompletePriority = todayViewModel::completePriority,
+                onRetry = todayViewModel::retryStorageOperation,
             )
 
             ResetLifeDestination.Organize -> OrganizeScreen(
@@ -74,6 +75,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onAddTask = organizeViewModel::addTask,
                 onToggleTask = organizeViewModel::toggleTask,
                 onPromoteToToday = organizeViewModel::promoteToToday,
+                onRetry = organizeViewModel::retryStorageOperation,
             )
         }
     }

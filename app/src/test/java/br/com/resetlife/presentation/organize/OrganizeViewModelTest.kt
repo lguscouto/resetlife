@@ -1,8 +1,8 @@
 package br.com.resetlife.presentation.organize
 
 import br.com.resetlife.MainDispatcherRule
-import br.com.resetlife.data.today.PriorityStore
 import br.com.resetlife.data.organize.OrganizeStore
+import br.com.resetlife.data.today.PriorityStore
 import br.com.resetlife.domain.organize.Project
 import br.com.resetlife.domain.organize.Task
 import br.com.resetlife.domain.today.PriorityItem
@@ -10,7 +10,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -139,6 +141,49 @@ class OrganizeViewModelTest {
     }
 
     @Test
+    fun `prevents a second task update while persistence is pending and confirms it`() = runTest {
+        val updateGate = CompletableDeferred<Unit>()
+        val task = Task(id = "task-1", title = "Caminhar")
+        val store = OrganizeFakeStore(
+            tasks = listOf(task),
+            taskUpdateGate = updateGate,
+        )
+        val viewModel = OrganizeViewModel(store, PriorityFakeStore())
+        advanceUntilIdle()
+
+        viewModel.toggleTask(task)
+        runCurrent()
+        viewModel.toggleTask(task)
+        updateGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertEquals(1, store.updateCalls)
+        assertTrue(viewModel.uiState.value.tasks.single().status.name == "COMPLETED")
+        assertTrue(viewModel.uiState.value.feedback != null)
+    }
+
+    @Test
+    fun `retries failed task save without losing draft`() = runTest {
+        val store = OrganizeFakeStore(taskSaveFailures = 1)
+        val viewModel = OrganizeViewModel(store, PriorityFakeStore())
+        advanceUntilIdle()
+        viewModel.onTaskTitleChanged("Tarefa recuperável")
+
+        viewModel.addTask()
+        advanceUntilIdle()
+
+        assertEquals(OrganizeFeedback.StorageError, viewModel.uiState.value.feedback)
+        assertEquals("Tarefa recuperável", viewModel.uiState.value.taskTitleInput)
+        assertTrue(viewModel.uiState.value.canRetry)
+
+        viewModel.retryStorageOperation()
+        advanceUntilIdle()
+
+        assertEquals(OrganizeFeedback.TaskCreated, viewModel.uiState.value.feedback)
+        assertEquals(listOf("Tarefa recuperável"), viewModel.uiState.value.tasks.map { it.title })
+    }
+
+    @Test
     fun `promotes a task only when a priority slot is available`() = runTest {
         val task = Task(id = "1", title = "Organizar documentos")
         val priorities = PriorityFakeStore()
@@ -153,17 +198,69 @@ class OrganizeViewModelTest {
 
         assertEquals(listOf(task.title), priorities.saved.map { it.title })
     }
+
+    @Test
+    fun `prevents repeated promotion while first priority save is pending`() = runTest {
+        val addGate = CompletableDeferred<Unit>()
+        val task = Task(id = "task-1", title = "Organizar documentos")
+        val priorities = PriorityFakeStore(addGate = addGate)
+        val viewModel = OrganizeViewModel(
+            OrganizeFakeStore(tasks = listOf(task)),
+            priorities,
+        )
+        advanceUntilIdle()
+
+        viewModel.promoteToToday(task)
+        runCurrent()
+        viewModel.promoteToToday(task)
+        addGate.complete(Unit)
+        advanceUntilIdle()
+
+        assertEquals(1, priorities.addCalls)
+        assertEquals(OrganizeFeedback.Promoted, viewModel.uiState.value.feedback)
+    }
+
+    @Test
+    fun `retries a transient organize loading failure`() = runTest {
+        val viewModel = OrganizeViewModel(
+            OrganizeFakeStore(
+                tasks = listOf(Task(id = "task-1", title = "Caminhar")),
+                projectObserveFailures = 1,
+            ),
+            PriorityFakeStore(),
+        )
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.loadError)
+
+        viewModel.retryStorageOperation()
+        advanceUntilIdle()
+
+        assertTrue(!viewModel.uiState.value.loadError)
+        assertEquals(listOf("Caminhar"), viewModel.uiState.value.tasks.map { it.title })
+    }
 }
 
 private class OrganizeFakeStore(
     projects: List<Project> = emptyList(),
     tasks: List<Task> = emptyList(),
     private val taskSaveGate: CompletableDeferred<Unit>? = null,
+    private val taskUpdateGate: CompletableDeferred<Unit>? = null,
+    private var taskSaveFailures: Int = 0,
+    private var projectObserveFailures: Int = 0,
 ) : OrganizeStore {
     private val projectsState = MutableStateFlow(projects)
     private val tasksState = MutableStateFlow(tasks)
+    var updateCalls = 0
 
-    override fun observeProjects(): Flow<List<Project>> = projectsState
+    override fun observeProjects(): Flow<List<Project>> {
+        if (projectObserveFailures > 0) {
+            projectObserveFailures -= 1
+            return flow { error("transient loading failure") }
+        }
+        return projectsState
+    }
+
     override fun observeTasks(): Flow<List<Task>> = tasksState
 
     override suspend fun addProject(project: Project) {
@@ -172,10 +269,16 @@ private class OrganizeFakeStore(
 
     override suspend fun addTask(task: Task) {
         taskSaveGate?.await()
+        if (taskSaveFailures > 0) {
+            taskSaveFailures -= 1
+            error("transient storage failure")
+        }
         tasksState.value = tasksState.value + task
     }
 
     override suspend fun updateTask(task: Task): Boolean {
+        updateCalls += 1
+        taskUpdateGate?.await()
         tasksState.value = tasksState.value.map { if (it.id == task.id) task else it }
         return true
     }
@@ -183,13 +286,17 @@ private class OrganizeFakeStore(
 
 private class PriorityFakeStore(
     initial: List<PriorityItem> = emptyList(),
+    private val addGate: CompletableDeferred<Unit>? = null,
 ) : PriorityStore {
     private val state = MutableStateFlow(initial)
     val saved = mutableListOf<PriorityItem>()
+    var addCalls = 0
 
     override fun observeToday(): Flow<List<PriorityItem>> = state
 
     override suspend fun add(priority: PriorityItem) {
+        addCalls += 1
+        addGate?.await()
         saved += priority
         state.value = state.value + priority
     }

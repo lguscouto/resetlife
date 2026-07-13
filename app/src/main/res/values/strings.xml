@@ -17,9 +17,12 @@
     <string name="priority_input_label">Nova prioridade</string>
     <string name="add_priority">Adicionar</string>
     <string name="priority_added">Prioridade adicionada.</string>
+    <string name="priority_completed">Prioridade concluída.</string>
     <string name="empty_priority_title">Digite uma prioridade antes de adicionar.</string>
     <string name="priority_limit_reached">Você já definiu as três prioridades de hoje. Conclua uma ou replaneje o dia.</string>
     <string name="priority_storage_error">Não foi possível salvar a prioridade. Tente novamente.</string>
+    <string name="priority_load_error">Não foi possível carregar as prioridades. Tente novamente.</string>
+    <string name="loading_priorities">Carregando prioridades…</string>
     <string name="no_priorities">Comece pequeno: adicione uma prioridade para hoje.</string>
     <string name="no_active_priorities">As prioridades de hoje estão concluídas. Escolha um próximo passo quando quiser continuar.</string>
     <string name="active_priority_description">Prioridade pendente: %1$s</string>
@@ -75,4 +78,8 @@
     <string name="organize_storage_error">Não foi possível salvar. Tente novamente.</string>
     <string name="project_created">Projeto criado.</string>
     <string name="task_created">Tarefa criada.</string>
+    <string name="task_completed">Tarefa concluída.</string>
+    <string name="task_reopened">Tarefa reaberta.</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="organize_load_error">Não foi possível carregar projetos e tarefas. Tente novamente.</string>
 </resources>

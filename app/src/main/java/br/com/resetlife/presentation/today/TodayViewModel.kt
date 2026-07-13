@@ -19,8 +19,16 @@ data class TodayUiState(
     val priorities: List<PriorityItem> = emptyList(),
     val feedback: TodayFeedback? = null,
     val isLoading: Boolean = true,
+    val loadError: Boolean = false,
     val isSavingPriority: Boolean = false,
+    val pendingPriorityId: String? = null,
 ) {
+    val isPriorityActionInProgress: Boolean
+        get() = pendingPriorityId != null
+
+    val canRetry: Boolean
+        get() = loadError || feedback == TodayFeedback.StorageError
+
     val activePriorityCount: Int
         get() = activePriorities.size
 
@@ -31,31 +39,68 @@ data class TodayUiState(
         get() = priorities.filter(PriorityItem::isCompleted)
 
     val isAddPriorityEnabled: Boolean
-        get() = !isLoading && !isSavingPriority && priorityInput.isNotBlank() &&
+        get() = !isLoading && !isSavingPriority && !isPriorityActionInProgress && priorityInput.isNotBlank() &&
             activePriorityCount < DailyPriorities.MAX_ACTIVE_PRIORITIES
 }
 
 enum class TodayFeedback {
     Added,
+    Completed,
     EmptyTitle,
     LimitReached,
     StorageError,
+}
+
+private sealed interface TodayRetryAction {
+    data object Load : TodayRetryAction
+    data object AddPriority : TodayRetryAction
+    data class CompletePriority(val id: String) : TodayRetryAction
 }
 
 class TodayViewModel(
     private val priorityStore: PriorityStore,
 ) : ViewModel() {
     private var dailyPriorities = DailyPriorities.empty()
+    private var retryAction: TodayRetryAction? = null
     private val mutableUiState = MutableStateFlow(TodayUiState())
 
     val uiState: StateFlow<TodayUiState> = mutableUiState.asStateFlow()
 
     init {
+        observePriorities()
+    }
+
+    fun retryStorageOperation() {
+        if (!uiState.value.canRetry) return
+        when (val action = retryAction) {
+            null, TodayRetryAction.Load -> {
+                retryAction = null
+                mutableUiState.value = mutableUiState.value.copy(
+                    isLoading = true,
+                    loadError = false,
+                    feedback = null,
+                )
+                observePriorities()
+            }
+            TodayRetryAction.AddPriority -> {
+                retryAction = null
+                addPriority()
+            }
+            is TodayRetryAction.CompletePriority -> {
+                retryAction = null
+                completePriority(action.id)
+            }
+        }
+    }
+
+    private fun observePriorities() {
         viewModelScope.launch {
             priorityStore.observeToday()
                 .catch {
+                    retryAction = TodayRetryAction.Load
                     mutableUiState.value = mutableUiState.value.copy(
                         isLoading = false,
+                        loadError = true,
                         feedback = TodayFeedback.StorageError,
                     )
                 }
@@ -64,6 +109,7 @@ class TodayViewModel(
                     mutableUiState.value = mutableUiState.value.copy(
                         priorities = priorities,
                         isLoading = false,
+                        loadError = false,
                     )
                 }
         }
@@ -74,6 +120,7 @@ class TodayViewModel(
             priorityInput = value,
             feedback = null,
         )
+        retryAction = null
     }
 
     fun addPriority() {
@@ -93,27 +140,44 @@ class TodayViewModel(
             }
 
             AddPriorityResult.EmptyTitle -> {
+                retryAction = null
                 mutableUiState.value = mutableUiState.value.copy(feedback = TodayFeedback.EmptyTitle)
             }
 
             AddPriorityResult.LimitReached -> {
+                retryAction = null
                 mutableUiState.value = mutableUiState.value.copy(feedback = TodayFeedback.LimitReached)
             }
         }
     }
 
     fun completePriority(id: String) {
+        if (uiState.value.isPriorityActionInProgress) return
         when (val result = dailyPriorities.complete(id)) {
             is CompletionResult.Updated -> {
                 dailyPriorities = result.priorities
-                mutableUiState.value = mutableUiState.value.copy(feedback = null)
+                mutableUiState.value = mutableUiState.value.copy(
+                    feedback = null,
+                    pendingPriorityId = id,
+                )
                 viewModelScope.launch {
                     val persisted = runCatching { priorityStore.complete(id) }.getOrDefault(false)
-                    if (!persisted) showStorageError()
+                    if (!persisted) {
+                        dailyPriorities = DailyPriorities.from(uiState.value.priorities)
+                        retryAction = TodayRetryAction.CompletePriority(id)
+                        showStorageError()
+                    } else {
+                        retryAction = null
+                        mutableUiState.value = mutableUiState.value.copy(
+                            feedback = TodayFeedback.Completed,
+                            pendingPriorityId = null,
+                        )
+                    }
                 }
             }
 
             CompletionResult.NotFound -> {
+                retryAction = TodayRetryAction.Load
                 mutableUiState.value = mutableUiState.value.copy(feedback = TodayFeedback.StorageError)
             }
         }
@@ -126,6 +190,7 @@ class TodayViewModel(
                 true
             }.getOrDefault(false)
             if (persisted) {
+                retryAction = null
                 mutableUiState.value = mutableUiState.value.copy(
                     priorityInput = "",
                     feedback = TodayFeedback.Added,
@@ -133,6 +198,7 @@ class TodayViewModel(
                 )
             } else {
                 dailyPriorities = DailyPriorities.from(uiState.value.priorities)
+                retryAction = TodayRetryAction.AddPriority
                 showStorageError()
             }
         }
@@ -141,7 +207,9 @@ class TodayViewModel(
     private fun showStorageError() {
         mutableUiState.value = mutableUiState.value.copy(
             feedback = TodayFeedback.StorageError,
+            loadError = false,
             isSavingPriority = false,
+            pendingPriorityId = null,
         )
     }
 }

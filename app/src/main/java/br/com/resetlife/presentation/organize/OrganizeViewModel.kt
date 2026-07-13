@@ -11,6 +11,7 @@ import br.com.resetlife.domain.organize.TaskCreationResult
 import br.com.resetlife.domain.organize.TaskStatus
 import br.com.resetlife.domain.today.AddPriorityResult
 import br.com.resetlife.domain.today.DailyPriorities
+import br.com.resetlife.domain.today.PriorityItem
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,9 +39,17 @@ data class OrganizeUiState(
     val taskDurationError: OrganizeFieldError? = null,
     val feedback: OrganizeFeedback? = null,
     val isLoading: Boolean = true,
+    val loadError: Boolean = false,
     val isProjectSaving: Boolean = false,
     val isTaskSaving: Boolean = false,
+    val pendingTaskId: String? = null,
 ) {
+    val canRetry: Boolean
+        get() = loadError || feedback == OrganizeFeedback.StorageError
+
+    val isDataMutationInProgress: Boolean
+        get() = isProjectSaving || isTaskSaving || pendingTaskId != null
+
     val filteredTasks: List<Task>
         get() = tasks.filter { it.matchesQuery(searchQuery) }
 
@@ -63,9 +72,19 @@ enum class OrganizeFeedback {
     InvalidDuration,
     ProjectCreated,
     TaskCreated,
+    TaskCompleted,
+    TaskReopened,
     PriorityLimitReached,
     Promoted,
     StorageError,
+}
+
+private sealed interface OrganizeRetryAction {
+    data object Load : OrganizeRetryAction
+    data object AddProject : OrganizeRetryAction
+    data object AddTask : OrganizeRetryAction
+    data class ToggleTask(val task: Task) : OrganizeRetryAction
+    data class Promote(val priority: PriorityItem) : OrganizeRetryAction
 }
 
 class OrganizeViewModel(
@@ -73,29 +92,66 @@ class OrganizeViewModel(
     private val priorityStore: PriorityStore,
 ) : ViewModel() {
     private var dailyPriorities = DailyPriorities.empty()
+    private var retryAction: OrganizeRetryAction? = null
     private val mutableUiState = MutableStateFlow(OrganizeUiState())
 
     val uiState: StateFlow<OrganizeUiState> = mutableUiState.asStateFlow()
 
     init {
+        observeOrganizeData()
+        viewModelScope.launch {
+            priorityStore.observeToday()
+                .catch { /* The priority screen owns its own storage feedback. */ }
+                .collect { priorities -> dailyPriorities = DailyPriorities.from(priorities) }
+        }
+    }
+
+    fun retryStorageOperation() {
+        if (!uiState.value.canRetry) return
+        when (val action = retryAction) {
+            null, OrganizeRetryAction.Load -> {
+                retryAction = null
+                mutableUiState.value = mutableUiState.value.copy(
+                    isLoading = true,
+                    loadError = false,
+                    feedback = null,
+                )
+                observeOrganizeData()
+            }
+            OrganizeRetryAction.AddProject -> {
+                retryAction = null
+                addProject()
+            }
+            OrganizeRetryAction.AddTask -> {
+                retryAction = null
+                addTask()
+            }
+            is OrganizeRetryAction.ToggleTask -> {
+                retryAction = null
+                toggleTask(action.task)
+            }
+            is OrganizeRetryAction.Promote -> {
+                retryAction = null
+                persistPromotedPriority(action.priority)
+            }
+        }
+    }
+
+    private fun observeOrganizeData() {
         viewModelScope.launch {
             combine(
                 organizeStore.observeProjects(),
                 organizeStore.observeTasks(),
             ) { projects, tasks -> projects to tasks }
-                .catch { showStorageError() }
+                .catch { showLoadError() }
                 .collect { (projects, tasks) ->
                     mutableUiState.value = mutableUiState.value.copy(
                         projects = projects,
                         tasks = tasks,
                         isLoading = false,
+                        loadError = false,
                     )
                 }
-        }
-        viewModelScope.launch {
-            priorityStore.observeToday()
-                .catch { /* The priority screen owns its own storage feedback. */ }
-                .collect { priorities -> dailyPriorities = DailyPriorities.from(priorities) }
         }
     }
 
@@ -117,24 +173,27 @@ class OrganizeViewModel(
     }
 
     fun addProject() {
-        if (uiState.value.isProjectSaving) return
+        if (uiState.value.isDataMutationInProgress) return
         when (val result = Project.create(UUID.randomUUID().toString(), uiState.value.projectTitleInput, uiState.value.projectGoalInput)) {
             is ProjectCreationResult.Created -> {
                 update { copy(isProjectSaving = true, projectTitleError = null, feedback = null) }
                 viewModelScope.launch {
-                    runCatching { organizeStore.addProject(result.project) }
-                        .onSuccess {
-                            update {
-                                copy(
-                                    projectTitleInput = "",
-                                    projectGoalInput = "",
-                                    projectTitleError = null,
-                                    feedback = OrganizeFeedback.ProjectCreated,
-                                    isProjectSaving = false,
-                                )
-                            }
+                    val saved = runCatching { organizeStore.addProject(result.project) }.isSuccess
+                    if (saved) {
+                        retryAction = null
+                        update {
+                            copy(
+                                projectTitleInput = "",
+                                projectGoalInput = "",
+                                projectTitleError = null,
+                                feedback = OrganizeFeedback.ProjectCreated,
+                                isProjectSaving = false,
+                            )
                         }
-                        .onFailure { showStorageError() }
+                    } else {
+                        retryAction = OrganizeRetryAction.AddProject
+                        showStorageError()
+                    }
                 }
             }
             ProjectCreationResult.EmptyTitle -> update {
@@ -144,7 +203,7 @@ class OrganizeViewModel(
     }
 
     fun addTask() {
-        if (uiState.value.isTaskSaving) return
+        if (uiState.value.isDataMutationInProgress) return
         val currentState = uiState.value
         val titleError = OrganizeFieldError.Required.takeIf { currentState.taskTitleInput.isBlank() }
         val rawDueDate = currentState.taskDueDateInput.trim()
@@ -182,23 +241,26 @@ class OrganizeViewModel(
             is TaskCreationResult.Created -> {
                 update { copy(isTaskSaving = true, feedback = null) }
                 viewModelScope.launch {
-                    runCatching { organizeStore.addTask(result.task) }
-                        .onSuccess {
-                            update {
-                                copy(
-                                    taskTitleInput = "",
-                                    taskNoteInput = "",
-                                    taskDueDateInput = "",
-                                    taskEstimatedMinutesInput = "",
-                                    taskTitleError = null,
-                                    taskDueDateError = null,
-                                    taskDurationError = null,
-                                    feedback = OrganizeFeedback.TaskCreated,
-                                    isTaskSaving = false,
-                                )
-                            }
+                    val saved = runCatching { organizeStore.addTask(result.task) }.isSuccess
+                    if (saved) {
+                        retryAction = null
+                        update {
+                            copy(
+                                taskTitleInput = "",
+                                taskNoteInput = "",
+                                taskDueDateInput = "",
+                                taskEstimatedMinutesInput = "",
+                                taskTitleError = null,
+                                taskDueDateError = null,
+                                taskDurationError = null,
+                                feedback = OrganizeFeedback.TaskCreated,
+                                isTaskSaving = false,
+                            )
                         }
-                        .onFailure { showStorageError() }
+                    } else {
+                        retryAction = OrganizeRetryAction.AddTask
+                        showStorageError()
+                    }
                 }
             }
             TaskCreationResult.EmptyTitle -> update {
@@ -208,27 +270,59 @@ class OrganizeViewModel(
     }
 
     fun toggleTask(task: Task) {
-        val updated = if (task.status.name == "COMPLETED") task.reopen() else task.complete()
-        persist { organizeStore.updateTask(updated) }
-    }
-
-    fun promoteToToday(task: Task) {
-        when (val result = dailyPriorities.add(id = task.id, title = task.title)) {
-            is AddPriorityResult.Added -> {
-                dailyPriorities = result.priorities
-                persist {
-                    priorityStore.add(result.priorities.items.last())
-                    update { copy(feedback = OrganizeFeedback.Promoted) }
+        if (uiState.value.isDataMutationInProgress) return
+        val updated = if (task.status == TaskStatus.COMPLETED) task.reopen() else task.complete()
+        update { copy(pendingTaskId = task.id, feedback = null) }
+        viewModelScope.launch {
+            val saved = runCatching { organizeStore.updateTask(updated) }.getOrDefault(false)
+            if (saved) {
+                retryAction = null
+                update {
+                    copy(
+                        pendingTaskId = null,
+                        feedback = if (updated.status == TaskStatus.COMPLETED) {
+                            OrganizeFeedback.TaskCompleted
+                        } else {
+                            OrganizeFeedback.TaskReopened
+                        },
+                    )
                 }
+            } else {
+                retryAction = OrganizeRetryAction.ToggleTask(task)
+                showStorageError()
             }
-            AddPriorityResult.LimitReached -> update { copy(feedback = OrganizeFeedback.PriorityLimitReached) }
-            AddPriorityResult.EmptyTitle -> update { copy(feedback = OrganizeFeedback.EmptyTaskTitle) }
         }
     }
 
-    private fun persist(action: suspend () -> Unit) {
+    fun promoteToToday(task: Task) {
+        if (uiState.value.isDataMutationInProgress) return
+        when (val result = dailyPriorities.add(id = task.id, title = task.title)) {
+            is AddPriorityResult.Added -> {
+                dailyPriorities = result.priorities
+                update { copy(pendingTaskId = task.id, feedback = null) }
+                persistPromotedPriority(result.priorities.items.last())
+            }
+            AddPriorityResult.LimitReached -> {
+                retryAction = null
+                update { copy(feedback = OrganizeFeedback.PriorityLimitReached) }
+            }
+            AddPriorityResult.EmptyTitle -> {
+                retryAction = null
+                update { copy(feedback = OrganizeFeedback.EmptyTaskTitle) }
+            }
+        }
+    }
+
+    private fun persistPromotedPriority(priority: PriorityItem) {
         viewModelScope.launch {
-            runCatching { action() }.onFailure { showStorageError() }
+            val saved = runCatching { priorityStore.add(priority) }.isSuccess
+            if (saved) {
+                retryAction = null
+                update { copy(pendingTaskId = null, feedback = OrganizeFeedback.Promoted) }
+            } else {
+                retryAction = OrganizeRetryAction.Promote(priority)
+                showStorageError()
+            }
         }
     }
 
@@ -236,13 +330,29 @@ class OrganizeViewModel(
         mutableUiState.value = transform(mutableUiState.value)
     }
 
+    private fun showLoadError() {
+        retryAction = OrganizeRetryAction.Load
+        update {
+            copy(
+                feedback = OrganizeFeedback.StorageError,
+                isLoading = false,
+                loadError = true,
+                isProjectSaving = false,
+                isTaskSaving = false,
+                pendingTaskId = null,
+            )
+        }
+    }
+
     private fun showStorageError() {
         update {
             copy(
                 feedback = OrganizeFeedback.StorageError,
                 isLoading = false,
+                loadError = false,
                 isProjectSaving = false,
                 isTaskSaving = false,
+                pendingTaskId = null,
             )
         }
     }

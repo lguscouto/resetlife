@@ -2,6 +2,7 @@ package br.com.resetlife.presentation.today
 
 import br.com.resetlife.domain.today.PriorityItem
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TodayUiStateTest {
@@ -16,5 +17,12 @@ class TodayUiStateTest {
         assertEquals(listOf(first, last), state.activePriorities)
         assertEquals(listOf(completed), state.completedPriorities)
         assertEquals(2, state.activePriorityCount)
+    }
+
+    @Test
+    fun `exposes retry when loading or storage fails`() {
+        assertTrue(TodayUiState(loadError = true).canRetry)
+        assertTrue(TodayUiState(feedback = TodayFeedback.StorageError).canRetry)
+        assertTrue(!TodayUiState(isLoading = false).canRetry)
     }
 }

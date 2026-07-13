@@ -1,7 +1,6 @@
 package br.com.resetlife.presentation.today
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.resetlife.R
 import br.com.resetlife.domain.today.PriorityItem
+import br.com.resetlife.presentation.components.ResetLifeLoading
 import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
@@ -51,6 +50,7 @@ fun TodayScreen(
     onPriorityInputChanged: (String) -> Unit,
     onAddPriority: () -> Unit,
     onCompletePriority: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -149,32 +149,39 @@ fun TodayScreen(
                 }
             }
 
-            if (uiState.feedback != null) {
+            if (uiState.feedback != null && !(uiState.loadError && uiState.feedback == TodayFeedback.StorageError)) {
                 val feedbackText = when (uiState.feedback) {
                     TodayFeedback.Added -> stringResource(R.string.priority_added)
+                    TodayFeedback.Completed -> stringResource(R.string.priority_completed)
                     TodayFeedback.EmptyTitle -> stringResource(R.string.empty_priority_title)
                     TodayFeedback.LimitReached -> stringResource(R.string.priority_limit_reached)
                     TodayFeedback.StorageError -> stringResource(R.string.priority_storage_error)
                 }
                 ResetLifeMessage(
                     text = feedbackText,
-                    tone = if (uiState.feedback == TodayFeedback.Added) {
+                    tone = if (uiState.feedback == TodayFeedback.Added || uiState.feedback == TodayFeedback.Completed) {
                         ResetLifeMessageTone.Success
                     } else {
                         ResetLifeMessageTone.Error
                     },
+                    actionLabel = if (uiState.feedback == TodayFeedback.StorageError) {
+                        stringResource(R.string.retry)
+                    } else {
+                        null
+                    },
+                    onAction = if (uiState.feedback == TodayFeedback.StorageError) onRetry else null,
                 )
             }
 
             if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+                ResetLifeLoading(text = stringResource(R.string.loading_priorities))
+            } else if (uiState.loadError) {
+                ResetLifeMessage(
+                    text = stringResource(R.string.priority_load_error),
+                    tone = ResetLifeMessageTone.Error,
+                    actionLabel = stringResource(R.string.retry),
+                    onAction = onRetry,
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -205,6 +212,7 @@ fun TodayScreen(
                                 PriorityRow(
                                     priority = priority,
                                     onComplete = onCompletePriority,
+                                    isActionInProgress = uiState.isPriorityActionInProgress,
                                 )
                             }
                         }
@@ -226,6 +234,7 @@ fun TodayScreen(
                                 PriorityRow(
                                     priority = priority,
                                     onComplete = onCompletePriority,
+                                    isActionInProgress = uiState.isPriorityActionInProgress,
                                 )
                             }
                         }
@@ -240,6 +249,7 @@ fun TodayScreen(
 private fun PriorityRow(
     priority: PriorityItem,
     onComplete: (String) -> Unit,
+    isActionInProgress: Boolean,
 ) {
     val priorityDescription = if (priority.isCompleted) {
         stringResource(R.string.completed_priority_description, priority.title)
@@ -260,6 +270,7 @@ private fun PriorityRow(
                     onComplete(priority.id)
                 }
             },
+            enabled = !priority.isCompleted && !isActionInProgress,
         )
         Text(
             text = priority.title,
@@ -287,6 +298,7 @@ private fun TodayScreenPreview() {
             onPriorityInputChanged = {},
             onAddPriority = {},
             onCompletePriority = {},
+            onRetry = {},
         )
     }
 }

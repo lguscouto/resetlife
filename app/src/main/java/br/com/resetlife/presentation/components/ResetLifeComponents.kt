@@ -1,14 +1,19 @@
 package br.com.resetlife.presentation.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,7 +34,7 @@ fun ResetLifeSurface(
         else -> MaterialTheme.colorScheme.surface
     }
     Surface(
-        modifier = modifier,
+        modifier = modifier.animateContentSize(),
         shape = ResetLifeShapes.card,
         color = containerColor,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
@@ -64,6 +69,8 @@ fun ResetLifeMessage(
     text: String,
     tone: ResetLifeMessageTone,
     modifier: Modifier = Modifier,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null,
 ) {
     val colors = LocalResetLifeColors.current
     val (container, content) = when (tone) {
@@ -77,8 +84,39 @@ fun ResetLifeMessage(
         shape = ResetLifeShapes.field,
         color = container,
     ) {
-        Row(modifier = Modifier.padding(ResetLifeSpacing.md)) {
-            Text(text, style = MaterialTheme.typography.bodyMedium, color = content)
+        Column(
+            modifier = Modifier.padding(ResetLifeSpacing.md),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(ResetLifeSpacing.xs),
+        ) {
+            AnimatedContent(targetState = text, label = "resetLifeMessageText") { message ->
+                Text(message, style = MaterialTheme.typography.bodyMedium, color = content)
+            }
+            if (actionLabel != null && onAction != null) {
+                TextButton(onClick = onAction) {
+                    Text(actionLabel, color = content)
+                }
+            }
         }
+    }
+}
+
+@Composable
+fun ResetLifeLoading(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(ResetLifeSpacing.lg),
+        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(ResetLifeSpacing.sm),
+    ) {
+        CircularProgressIndicator(modifier = Modifier.size(28.dp), strokeWidth = 3.dp)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

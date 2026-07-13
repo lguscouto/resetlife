@@ -51,6 +51,7 @@ import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
+import br.com.resetlife.presentation.components.ResetLifeLoading
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 import br.com.resetlife.presentation.theme.ResetLifeTheme
 
@@ -70,6 +71,7 @@ fun OrganizeScreen(
     onAddTask: () -> Unit,
     onToggleTask: (Task) -> Unit,
     onPromoteToToday: (Task) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var projectFormExpanded by rememberSaveable { mutableStateOf(false) }
@@ -152,7 +154,7 @@ fun OrganizeScreen(
                         Button(
                             onClick = onAddProject,
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = !uiState.isProjectSaving,
+                            enabled = !uiState.isDataMutationInProgress,
                         ) {
                             Text(
                                 stringResource(
@@ -284,7 +286,7 @@ fun OrganizeScreen(
                         Button(
                             onClick = onAddTask,
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = !uiState.isTaskSaving,
+                            enabled = !uiState.isDataMutationInProgress,
                         ) {
                             Text(
                                 stringResource(
@@ -296,9 +298,11 @@ fun OrganizeScreen(
                 }
             }
 
-            if (uiState.feedback != null) {
+            if (uiState.feedback != null && !(uiState.loadError && uiState.feedback == OrganizeFeedback.StorageError)) {
                 val isSuccess = uiState.feedback == OrganizeFeedback.ProjectCreated ||
                     uiState.feedback == OrganizeFeedback.TaskCreated ||
+                    uiState.feedback == OrganizeFeedback.TaskCompleted ||
+                    uiState.feedback == OrganizeFeedback.TaskReopened ||
                     uiState.feedback == OrganizeFeedback.Promoted
                 ResetLifeMessage(
                     text = when (uiState.feedback) {
@@ -307,11 +311,19 @@ fun OrganizeScreen(
                         OrganizeFeedback.InvalidDuration -> stringResource(R.string.invalid_task_duration)
                         OrganizeFeedback.ProjectCreated -> stringResource(R.string.project_created)
                         OrganizeFeedback.TaskCreated -> stringResource(R.string.task_created)
+                        OrganizeFeedback.TaskCompleted -> stringResource(R.string.task_completed)
+                        OrganizeFeedback.TaskReopened -> stringResource(R.string.task_reopened)
                         OrganizeFeedback.PriorityLimitReached -> stringResource(R.string.organize_priority_limit)
                         OrganizeFeedback.Promoted -> stringResource(R.string.task_promoted)
                         OrganizeFeedback.StorageError -> stringResource(R.string.organize_storage_error)
                     },
                     tone = if (isSuccess) ResetLifeMessageTone.Success else ResetLifeMessageTone.Error,
+                    actionLabel = if (uiState.feedback == OrganizeFeedback.StorageError) {
+                        stringResource(R.string.retry)
+                    } else {
+                        null
+                    },
+                    onAction = if (uiState.feedback == OrganizeFeedback.StorageError) onRetry else null,
                 )
             }
 
@@ -329,9 +341,13 @@ fun OrganizeScreen(
                 keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
             )
             if (uiState.isLoading) {
+                ResetLifeLoading(text = stringResource(R.string.loading_tasks))
+            } else if (uiState.loadError) {
                 ResetLifeMessage(
-                    text = stringResource(R.string.loading_tasks),
-                    tone = ResetLifeMessageTone.Info,
+                    text = stringResource(R.string.organize_load_error),
+                    tone = ResetLifeMessageTone.Error,
+                    actionLabel = stringResource(R.string.retry),
+                    onAction = onRetry,
                 )
             } else if (uiState.filteredTasks.isEmpty()) {
                 ResetLifeMessage(
@@ -354,6 +370,7 @@ fun OrganizeScreen(
                             projectTitle = uiState.projects.firstOrNull { it.id == task.projectId }?.title,
                             onToggle = { onToggleTask(task) },
                             onPromote = { onPromoteToToday(task) },
+                            isActionInProgress = uiState.isDataMutationInProgress,
                         )
                     }
                 }
@@ -368,6 +385,7 @@ fun OrganizeScreen(
                             projectTitle = uiState.projects.firstOrNull { it.id == task.projectId }?.title,
                             onToggle = { onToggleTask(task) },
                             onPromote = { onPromoteToToday(task) },
+                            isActionInProgress = uiState.isDataMutationInProgress,
                         )
                     }
                 }
@@ -457,6 +475,7 @@ private fun TaskRow(
     projectTitle: String?,
     onToggle: () -> Unit,
     onPromote: () -> Unit,
+    isActionInProgress: Boolean,
 ) {
     val completed = task.status == TaskStatus.COMPLETED
     val dueDateForDisplay = task.dueDate?.let { TaskDateFormat.formatStored(it) ?: it }
@@ -470,7 +489,11 @@ private fun TaskRow(
                 .padding(ResetLifeSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(checked = completed, onCheckedChange = { onToggle() })
+            Checkbox(
+                checked = completed,
+                onCheckedChange = { onToggle() },
+                enabled = !isActionInProgress,
+            )
             Column(
                 modifier = Modifier.weight(1f).padding(start = ResetLifeSpacing.sm),
                 verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.xs),
@@ -501,7 +524,7 @@ private fun TaskRow(
                 }
             }
             if (!completed) {
-                OutlinedButton(onClick = onPromote) {
+                OutlinedButton(onClick = onPromote, enabled = !isActionInProgress) {
                     Text(stringResource(R.string.add_to_today))
                 }
             }
@@ -518,7 +541,7 @@ private fun OrganizeScreenPreview() {
             onSearchChanged = {}, onProjectTitleChanged = {}, onProjectGoalChanged = {},
             onProjectSelected = {}, onAddProject = {}, onTaskTitleChanged = {},
             onTaskNoteChanged = {}, onTaskDueDateChanged = {}, onTaskEstimatedMinutesChanged = {},
-            onAddTask = {}, onToggleTask = {}, onPromoteToToday = {},
+            onAddTask = {}, onToggleTask = {}, onPromoteToToday = {}, onRetry = {},
         )
     }
 }

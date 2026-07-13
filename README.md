@@ -2,12 +2,12 @@
 
 Aplicativo Android **offline-first** para ajudar pessoas a reorganizarem a vida por meio de planos de reset, prioridades diárias, hábitos, bem-estar, finanças essenciais e revisão semanal.
 
-O build `0.3.5` reduz o atrito dos formulários da jornada Organizar, com teclado/foco orientados, validação inline e datas exibidas no formato brasileiro `DD/MM/AAAA`.
+O build `0.3.6` torna explícitos os estados de carregamento, vazio, erro e salvamento nas jornadas Hoje e Organizar, com ação de tentar novamente para falhas de persistência e bloqueio de ações duplicadas durante operações em andamento.
 
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.3.5` (`versionCode = 8`);
+- versão atual: `0.3.6` (`versionCode = 9`);
 - suporte mínimo: Android 10 (API 29);
 - tela **Organizar** com formulários recolhíveis para criar projeto e tarefa;
 - tarefa priorizada como ação inicial e projeto separado visualmente;
@@ -18,6 +18,12 @@ O build `0.3.5` reduz o atrito dos formulários da jornada Organizar, com teclad
 - conclusão identificada por checkbox, estado textual e superfície atenuada;
 - ação `Adicionar a Hoje` separada visualmente de concluir tarefa;
 - estados vazios diferentes para lista vazia e busca sem resultado;
+- indicadores de carregamento reutilizáveis nas telas Hoje e Organizar;
+- mensagens de erro de carregamento distintas de lista vazia, com ação `Tentar novamente`;
+- retry de operações de persistência (criar, concluir, promover) sem perder rascunhos;
+- bloqueio de ações duplicadas durante salvamento, conclusão e promoção;
+- feedback visual de conclusão de prioridade, conclusão e reabertura de tarefa;
+- microinterações não bloqueantes (`AnimatedContent`, `animateContentSize`) no feedback;
 - prazos aceitos e exibidos na interface como `DD/MM/AAAA`, com conversão interna compatível para armazenamento;
 - máscara automática para entrada numérica de datas;
 - validações inline para título, prazo e duração sem apagar o rascunho;
@@ -86,7 +92,7 @@ app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/1.json
 app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/2.json
 ```
 
-A validação realizada na versão `0.3.5` instalou o APK no emulador `Pixel_8`, confirmou erros inline de data/duração, corrigiu o formulário sem perder os campos, criou uma tarefa com prazo `15/07/2026`, verificou a exibição brasileira do prazo, confirmou a mensagem `Tarefa criada.` e preservou um rascunho ao alternar entre Hoje e Organizar.
+A validação realizada na versão `0.3.6` instalou o APK no emulador `Pixel_8`, confirmou os indicadores de carregamento, validou o bloqueio de ações duplicadas, verificou o feedback de conclusão de prioridade, confirmou a ação `Tentar novamente` em falhas de persistência e não encontrou `FATAL EXCEPTION` no logcat.
 
 ## Documentação
 
@@ -101,6 +107,7 @@ A validação realizada na versão `0.3.5` instalou o APK no emulador `Pixel_8`,
 - [Plano UX/UI da versão 0.3.3](docs/plans/2026-07-12-today-ux-0.3.3.md)
 - [Plano UX/UI da versão 0.3.4](docs/plans/2026-07-12-organize-ux-0.3.4.md)
 - [Plano UX/UI da versão 0.3.5](docs/plans/2026-07-12-forms-validation-0.3.5.md)
+- [Plano UX/UI da versão 0.3.6](docs/plans/2026-07-13-feedback-states-0.3.6.md)
 - [Notas de release 0.2.0](docs/releases/0.2.0.md)
 - [Notas de release 0.3.0](docs/releases/0.3.0.md)
 - [Notas de release 0.3.1](docs/releases/0.3.1.md)
@@ -108,6 +115,7 @@ A validação realizada na versão `0.3.5` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.3](docs/releases/0.3.3.md)
 - [Notas de release 0.3.4](docs/releases/0.3.4.md)
 - [Notas de release 0.3.5](docs/releases/0.3.5.md)
+- [Notas de release 0.3.6](docs/releases/0.3.6.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto
