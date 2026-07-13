@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import br.com.resetlife.presentation.theme.LocalResetLifeColors
 import br.com.resetlife.presentation.theme.ResetLifeShapes
@@ -80,7 +83,12 @@ fun ResetLifeMessage(
         ResetLifeMessageTone.Error -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
     }
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {
+                liveRegion = LiveRegionMode.Polite
+                contentDescription = text
+            },
         shape = ResetLifeShapes.field,
         color = container,
     ) {
@@ -108,7 +116,10 @@ fun ResetLifeLoading(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(ResetLifeSpacing.lg),
+            .padding(ResetLifeSpacing.lg)
+            .semantics(mergeDescendants = true) {
+                contentDescription = text
+            },
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(ResetLifeSpacing.sm),
     ) {

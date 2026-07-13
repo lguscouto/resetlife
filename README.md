@@ -2,12 +2,12 @@
 
 Aplicativo Android **offline-first** para ajudar pessoas a reorganizarem a vida por meio de planos de reset, prioridades diárias, hábitos, bem-estar, finanças essenciais e revisão semanal.
 
-O build `0.3.6` torna explícitos os estados de carregamento, vazio, erro e salvamento nas jornadas Hoje e Organizar, com ação de tentar novamente para falhas de persistência e bloqueio de ações duplicadas durante operações em andamento.
+O build `0.3.7` garante acessibilidade das jornadas principais, vazio, erro e salvamento nas jornadas Hoje e Organizar, com rótulos semânticos, indicação de status além de cor, áreas de toque adequadas e leitura de mensagens por TalkBack.
 
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.3.6` (`versionCode = 9`);
+- versão atual: `0.3.7` (`versionCode = 10`);
 - suporte mínimo: Android 10 (API 29);
 - tela **Organizar** com formulários recolhíveis para criar projeto e tarefa;
 - tarefa priorizada como ação inicial e projeto separado visualmente;
@@ -92,7 +92,7 @@ app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/1.json
 app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/2.json
 ```
 
-A validação realizada na versão `0.3.6` instalou o APK no emulador `Pixel_8`, confirmou os indicadores de carregamento, validou o bloqueio de ações duplicadas, verificou o feedback de conclusão de prioridade, confirmou a ação `Tentar novamente` em falhas de persistência e não encontrou `FATAL EXCEPTION` no logcat.
+A validação realizada na versão `0.3.7` instalou o APK no emulador `Pixel_8`, confirmou os rótulos semânticos em checkboxes e botões, verificou o ícone de conclusão além de cor, validou a leitura de mensagens por live region e não encontrou `FATAL EXCEPTION` no logcat.
 
 ## Documentação
 
@@ -108,6 +108,7 @@ A validação realizada na versão `0.3.6` instalou o APK no emulador `Pixel_8`,
 - [Plano UX/UI da versão 0.3.4](docs/plans/2026-07-12-organize-ux-0.3.4.md)
 - [Plano UX/UI da versão 0.3.5](docs/plans/2026-07-12-forms-validation-0.3.5.md)
 - [Plano UX/UI da versão 0.3.6](docs/plans/2026-07-13-feedback-states-0.3.6.md)
+- [Plano UX/UI da versão 0.3.7](docs/plans/2026-07-13-accessibility-0.3.7.md)
 - [Notas de release 0.2.0](docs/releases/0.2.0.md)
 - [Notas de release 0.3.0](docs/releases/0.3.0.md)
 - [Notas de release 0.3.1](docs/releases/0.3.1.md)
@@ -116,6 +117,7 @@ A validação realizada na versão `0.3.6` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.4](docs/releases/0.3.4.md)
 - [Notas de release 0.3.5](docs/releases/0.3.5.md)
 - [Notas de release 0.3.6](docs/releases/0.3.6.md)
+- [Notas de release 0.3.7](docs/releases/0.3.7.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +39,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
@@ -425,7 +429,10 @@ private fun FormToggle(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        TextButton(onClick = onToggle) {
+        TextButton(
+            onClick = onToggle,
+            modifier = Modifier,
+        ) {
             Text(stringResource(if (expanded) R.string.collapse_form else R.string.expand_form))
         }
     }
@@ -479,6 +486,13 @@ private fun TaskRow(
 ) {
     val completed = task.status == TaskStatus.COMPLETED
     val dueDateForDisplay = task.dueDate?.let { TaskDateFormat.formatStored(it) ?: it }
+    val completedLabel = stringResource(R.string.a11y_completed_indicator)
+    val openLabel = stringResource(R.string.a11y_open_indicator)
+    val checkboxDescription = if (completed) {
+        stringResource(R.string.a11y_task_reopen_checkbox, task.title)
+    } else {
+        stringResource(R.string.a11y_task_checkbox, task.title)
+    }
     ResetLifeSurface(
         modifier = Modifier.fillMaxWidth(),
         muted = completed,
@@ -493,17 +507,34 @@ private fun TaskRow(
                 checked = completed,
                 onCheckedChange = { onToggle() },
                 enabled = !isActionInProgress,
+                modifier = Modifier
+                    
+                    .semantics {
+                        contentDescription = checkboxDescription
+                        stateDescription = if (completed) completedLabel else openLabel
+                    },
             )
             Column(
                 modifier = Modifier.weight(1f).padding(start = ResetLifeSpacing.sm),
                 verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.xs),
             ) {
-                Text(
-                    task.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textDecoration = if (completed) TextDecoration.LineThrough else null,
-                    color = if (completed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (completed) {
+                        Text(
+                            text = "✓",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.semantics { contentDescription = completedLabel },
+                        )
+                        Spacer(modifier = Modifier.size(ResetLifeSpacing.xs))
+                    }
+                    Text(
+                        task.title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textDecoration = if (completed) TextDecoration.LineThrough else null,
+                        color = if (completed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    )
+                }
                 Text(
                     text = stringResource(if (completed) R.string.task_completed_state else R.string.task_open_state),
                     style = MaterialTheme.typography.labelMedium,
@@ -523,8 +554,17 @@ private fun TaskRow(
                     )
                 }
             }
+            val promoteDescription = stringResource(R.string.a11y_promote_button, task.title)
             if (!completed) {
-                OutlinedButton(onClick = onPromote, enabled = !isActionInProgress) {
+                OutlinedButton(
+                    onClick = onPromote,
+                    enabled = !isActionInProgress,
+                    modifier = Modifier
+                        
+                        .semantics {
+                            contentDescription = promoteDescription
+                        },
+                ) {
                     Text(stringResource(R.string.add_to_today))
                 }
             }

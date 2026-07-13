@@ -81,5 +81,14 @@
     <string name="task_completed">Tarefa concluída.</string>
     <string name="task_reopened">Tarefa reaberta.</string>
     <string name="retry">Tentar novamente</string>
+    <string name="a11y_priority_checkbox">Concluir prioridade: %1$s</string>
+    <string name="a11y_task_checkbox">Concluir tarefa: %1$s</string>
+    <string name="a11y_task_reopen_checkbox">Reabrir tarefa: %1$s</string>
+    <string name="a11y_promote_button">Adicionar a Hoje: %1$s</string>
+    <string name="a11y_expand_form">Expandir formulário: %1$s</string>
+    <string name="a11y_collapse_form">Recolher formulário: %1$s</string>
+    <string name="a11y_resetlife_message">Mensagem do aplicativo</string>
+    <string name="a11y_completed_indicator">Concluído</string>
+    <string name="a11y_open_indicator">Em aberto</string>
     <string name="organize_load_error">Não foi possível carregar projetos e tarefas. Tente novamente.</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -251,6 +253,9 @@ private fun PriorityRow(
     onComplete: (String) -> Unit,
     isActionInProgress: Boolean,
 ) {
+    val completedLabel = stringResource(R.string.a11y_completed_indicator)
+    val openLabel = stringResource(R.string.a11y_open_indicator)
+    val checkboxDescription = stringResource(R.string.a11y_priority_checkbox, priority.title)
     val priorityDescription = if (priority.isCompleted) {
         stringResource(R.string.completed_priority_description, priority.title)
     } else {
@@ -259,7 +264,10 @@ private fun PriorityRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .semantics(mergeDescendants = true) { contentDescription = priorityDescription }
+            .semantics(mergeDescendants = true) {
+                contentDescription = priorityDescription
+                stateDescription = if (priority.isCompleted) completedLabel else openLabel
+            }
             .padding(horizontal = ResetLifeSpacing.sm, vertical = ResetLifeSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -270,8 +278,22 @@ private fun PriorityRow(
                     onComplete(priority.id)
                 }
             },
+            modifier = Modifier.semantics {
+                contentDescription = checkboxDescription
+                stateDescription = if (priority.isCompleted) completedLabel else openLabel
+            },
             enabled = !priority.isCompleted && !isActionInProgress,
         )
+        Spacer(modifier = Modifier.size(ResetLifeSpacing.sm))
+        if (priority.isCompleted) {
+            Text(
+                text = "✓",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { contentDescription = completedLabel },
+            )
+            Spacer(modifier = Modifier.size(ResetLifeSpacing.xs))
+        }
         Text(
             text = priority.title,
             modifier = Modifier.padding(start = ResetLifeSpacing.sm),
