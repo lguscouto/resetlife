@@ -91,4 +91,27 @@
     <string name="a11y_completed_indicator">Concluído</string>
     <string name="a11y_open_indicator">Em aberto</string>
     <string name="organize_load_error">Não foi possível carregar projetos e tarefas. Tente novamente.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Bem-vindo ao ResetLife</string>
+    <string name="onboarding_offline_hint">Tudo funciona offline, sem conta nem internet.</string>
+    <string name="life_areas_question">Quais áreas da sua vida precisam de atenção?</string>
+    <string name="select_areas_hint">Escolha até 3 áreas prioritárias.</string>
+    <string name="life_area_health">Saúde física</string>
+    <string name="life_area_tasks">Tarefas/domínio</string>
+    <string name="life_area_home">Casa/ambiente</string>
+    <string name="life_area_finances">Finanças</string>
+    <string name="life_area_relationships">Relacionamentos</string>
+    <string name="life_area_mindset">Mentalidade/foco</string>
+    <string name="life_area_energy">Energia/bem-estar</string>
+    <string name="duration_question">Quanto tempo por dia você tem disponível?</string>
+    <string name="duration_10">10 minutos</string>
+    <string name="duration_20">20 minutos</string>
+    <string name="duration_30">30 minutos</string>
+    <string name="duration_45">45+ minutos</string>
+    <string name="plan_duration_question">Quantos dias de reset?</string>
+    <string name="plan_7_days">7 dias</string>
+    <string name="plan_14_days">14 dias</string>
+    <string name="plan_30_days">30 dias</string>
+    <string name="start_reset">Começar</string>
 </resources>

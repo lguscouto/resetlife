@@ -8,7 +8,7 @@ class ResetLifeDestinationTest {
     @Test
     fun `destinations have stable distinct keys in public order`() {
         assertEquals(
-            listOf(ResetLifeDestination.Today, ResetLifeDestination.Organize),
+            listOf(ResetLifeDestination.Today, ResetLifeDestination.Organize, ResetLifeDestination.Onboarding),
             ResetLifeDestination.entries,
         )
         assertNotEquals(ResetLifeDestination.Today.key, ResetLifeDestination.Organize.key)

@@ -9,11 +9,13 @@ import br.com.resetlife.data.local.organize.TaskDao
 import br.com.resetlife.data.local.organize.TaskEntity
 import br.com.resetlife.data.local.today.PriorityDao
 import br.com.resetlife.data.local.today.PriorityEntity
+import br.com.resetlife.data.local.onboarding.UserProfileDao
+import br.com.resetlife.data.local.onboarding.UserProfileEntity
 
 @Database(
-    entities = [PriorityEntity::class, ProjectEntity::class, TaskEntity::class],
-    version = 2,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    entities = [PriorityEntity::class, ProjectEntity::class, TaskEntity::class, UserProfileEntity::class],
+    version = 3,
+    autoMigrations = [AutoMigration(from = 2, to = 3)],
     exportSchema = true,
 )
 abstract class ResetLifeDatabase : RoomDatabase() {
@@ -22,4 +24,6 @@ abstract class ResetLifeDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
 
     abstract fun taskDao(): TaskDao
+
+    abstract fun userProfileDao(): UserProfileDao
 }

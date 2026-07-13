@@ -15,6 +15,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.resetlife.ResetLifeApplication
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
 import br.com.resetlife.presentation.navigation.ResetLifeNavigationBar
+import br.com.resetlife.presentation.onboarding.OnboardingScreen
+import br.com.resetlife.presentation.onboarding.OnboardingViewModel
+import br.com.resetlife.presentation.onboarding.OnboardingViewModelFactory
 import br.com.resetlife.presentation.organize.OrganizeScreen
 import br.com.resetlife.presentation.organize.OrganizeViewModel
 import br.com.resetlife.presentation.organize.OrganizeViewModelFactory
@@ -38,8 +41,12 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val organizeViewModel: OrganizeViewModel = viewModel(
         factory = OrganizeViewModelFactory(application.organizeStore, application.priorityStore),
     )
+    val onboardingViewModel: OnboardingViewModel = viewModel(
+        factory = OnboardingViewModelFactory(application.userProfileStore),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
+    val onboardingState by onboardingViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -76,6 +83,12 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onToggleTask = organizeViewModel::toggleTask,
                 onPromoteToToday = organizeViewModel::promoteToToday,
                 onRetry = organizeViewModel::retryStorageOperation,
+            )
+
+            ResetLifeDestination.Onboarding -> OnboardingScreen(
+                selectedArea = onboardingState.selectedArea,
+                onAreaSelected = onboardingViewModel::selectArea,
+                onNext = onboardingViewModel::nextStep,
             )
         }
     }

@@ -5,6 +5,7 @@ import androidx.room.Room
 import br.com.resetlife.data.local.ResetLifeDatabase
 import br.com.resetlife.data.organize.OrganizeRepository
 import br.com.resetlife.data.today.PriorityRepository
+import br.com.resetlife.data.onboarding.UserProfileRepository
 
 class ResetLifeApplication : Application() {
     private val database by lazy {
@@ -19,5 +20,9 @@ class ResetLifeApplication : Application() {
 
     val organizeStore by lazy {
         OrganizeRepository(database.projectDao(), database.taskDao())
+    }
+
+    val userProfileStore by lazy {
+        UserProfileRepository(database.userProfileDao())
     }
 }
