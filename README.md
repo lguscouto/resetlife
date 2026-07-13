@@ -118,6 +118,7 @@ A validação realizada na versão `0.3.7` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.5](docs/releases/0.3.5.md)
 - [Notas de release 0.3.6](docs/releases/0.3.6.md)
 - [Notas de release 0.3.7](docs/releases/0.3.7.md)
+- [Notas de release 0.3.8](docs/releases/0.3.8.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto
