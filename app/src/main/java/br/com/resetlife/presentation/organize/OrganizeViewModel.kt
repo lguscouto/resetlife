@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 data class OrganizeUiState(
     val projects: List<Project> = emptyList(),
@@ -240,7 +241,7 @@ class OrganizeViewModel(
         ) {
             is TaskCreationResult.Created -> {
                 update { copy(isTaskSaving = true, feedback = null) }
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     val saved = runCatching { organizeStore.addTask(result.task) }.isSuccess
                     if (saved) {
                         retryAction = null

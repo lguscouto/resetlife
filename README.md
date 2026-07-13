@@ -2,12 +2,12 @@
 
 Aplicativo Android **offline-first** para ajudar pessoas a reorganizarem a vida por meio de planos de reset, prioridades diárias, hábitos, bem-estar, finanças essenciais e revisão semanal.
 
-O build `0.3.7` garante acessibilidade das jornadas principais, vazio, erro e salvamento nas jornadas Hoje e Organizar, com rótulos semânticos, indicação de status além de cor, áreas de toque adequadas e leitura de mensagens por TalkBack.
+A build `0.3.8` corrige a persistência de tarefas criadas via UI (bug no `viewModelScope.launch` que não aguardava o Room concluir escrita no DB), reforça a execução de escrever no `Dispatchers.IO` e inclui testes instrumentados de jornada real (UiAutomator) cobrindo criação de prioridades, navegação entre telas e criação de tarefas.
 
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.3.7` (`versionCode = 10`);
+- versão atual: `0.3.8` (`versionCode = 11`);
 - suporte mínimo: Android 10 (API 29);
 - tela **Organizar** com formulários recolhíveis para criar projeto e tarefa;
 - tarefa priorizada como ação inicial e projeto separado visualmente;
