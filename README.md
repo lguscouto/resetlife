@@ -2,12 +2,16 @@
 
 Aplicativo Android **offline-first** para ajudar pessoas a reorganizarem a vida por meio de planos de reset, prioridades diárias, hábitos, bem-estar, finanças essenciais e revisão semanal.
 
-A build `0.3.8` corrige a persistência de tarefas criadas via UI (bug no `viewModelScope.launch` que não aguardava o Room concluir escrita no DB), reforça a execução de escrever no `Dispatchers.IO` e inclui testes instrumentados de jornada real (UiAutomator) cobrindo criação de prioridades, navegação entre telas e criação de tarefas.
+A build `0.3.9` é o release candidate UX/UI final, com todos os portões atendidos:
+- tema escuro funcional em todas as telas;
+- suporte a fonte grande (1.5x) sem overflow;
+- insets corretas (barra de navegação, StatusBar);
+- 6 tests de jornada UiAutomator passando (criar prioridade, concluir, navegar, criar tarefa, toggle, promover);
 
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.3.8` (`versionCode = 11`);
+- versão atual: `0.3.9` (`versionCode = 12`);
 - suporte mínimo: Android 10 (API 29);
 - tela **Organizar** com formulários recolhíveis para criar projeto e tarefa;
 - tarefa priorizada como ação inicial e projeto separado visualmente;
@@ -92,7 +96,7 @@ app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/1.json
 app/schemas/br.com.resetlife.data.local.ResetLifeDatabase/2.json
 ```
 
-A validação realizada na versão `0.3.7` instalou o APK no emulador `Pixel_8`, confirmou os rótulos semânticos em checkboxes e botões, verificou o ícone de conclusão além de cor, validou a leitura de mensagens por live region e não encontrou `FATAL EXCEPTION` no logcat.
+A validação realizada na versão `0.3.9` instalou o APK no emulador `Pixel_8`, confirmou os rótulos semânticos em checkboxes e botões, verificou o ícone de conclusão além de cor, validou a leitura de mensagens por live region, testou tema escuro e fonte grande (1.5x) sem overflow, e não encontrou `FATAL EXCEPTION` no logcat.
 
 ## Documentação
 
@@ -119,6 +123,7 @@ A validação realizada na versão `0.3.7` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.6](docs/releases/0.3.6.md)
 - [Notas de release 0.3.7](docs/releases/0.3.7.md)
 - [Notas de release 0.3.8](docs/releases/0.3.8.md)
+- [Notas de release 0.3.9](docs/releases/0.3.9.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto
