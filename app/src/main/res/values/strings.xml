@@ -134,4 +134,18 @@
     <string name="mood_neutral">Neutro</string>
     <string name="mood_high">Alto</string>
     <string name="mood_very_high">Muito alto</string>
+
+    <!-- Weekly Review -->
+    <string name="weekly_review_nav">Revisão</string>
+    <string name="weekly_review_nav_description">Revisão semanal</string>
+    <string name="weekly_review_title">Revisão da semana</string>
+    <string name="weekly_review_subtitle">Feche o ciclo e planeje a próxima semana.</string>
+    <string name="weekly_review_summary">Resumo da semana</string>
+    <string name="weekly_review_summary_values">Prioridades concluídas: %1$d\nPrioridades pendentes: %2$d\nTarefas concluídas: %3$d\nTarefas em aberto: %4$d\nCheck-ins: %5$d</string>
+    <string name="weekly_review_completed_label">O que foi concluído?</string>
+    <string name="weekly_review_pending_label">O que ficou pendente e ainda importa?</string>
+    <string name="weekly_review_difficulty_label">O que dificultou a semana?</string>
+    <string name="weekly_review_next_week_label">Quais são as 3 prioridades da próxima semana?</string>
+    <string name="weekly_review_habit_label">Qual hábito merece ajuste?</string>
+    <string name="save_weekly_review">Salvar revisão</string>
 </resources>

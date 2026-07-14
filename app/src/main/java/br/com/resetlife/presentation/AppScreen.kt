@@ -29,6 +29,9 @@ import br.com.resetlife.presentation.today.TodayViewModelFactory
 import br.com.resetlife.presentation.wellbeing.CheckInScreen
 import br.com.resetlife.presentation.wellbeing.CheckInViewModel
 import br.com.resetlife.presentation.wellbeing.CheckInViewModelFactory
+import br.com.resetlife.presentation.weeklyreview.WeeklyReviewScreen
+import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModel
+import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModelFactory
 
 @Composable
 fun ResetLifeApp(application: ResetLifeApplication) {
@@ -68,10 +71,18 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val checkInViewModel: CheckInViewModel = viewModel(
         factory = CheckInViewModelFactory(application.wellbeingStore),
     )
+    val weeklyReviewViewModel: WeeklyReviewViewModel = viewModel(
+        factory = WeeklyReviewViewModelFactory(
+            application.priorityStore,
+            application.organizeStore,
+            application.weeklyReviewStore,
+        ),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
     val checkInState by checkInViewModel.uiState.collectAsState()
+    val weeklyReviewState by weeklyReviewViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -129,6 +140,17 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onStressSelected = checkInViewModel::setStress,
                 onSleepSelected = checkInViewModel::setSleep,
                 onSave = checkInViewModel::save,
+            )
+
+            ResetLifeDestination.WeeklyReview -> WeeklyReviewScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = weeklyReviewState,
+                onCompletedChanged = weeklyReviewViewModel::setCompleted,
+                onPendingChanged = weeklyReviewViewModel::setPending,
+                onDifficultyChanged = weeklyReviewViewModel::setDifficulty,
+                onNextWeekChanged = weeklyReviewViewModel::setNextWeekPriorities,
+                onHabitChanged = weeklyReviewViewModel::setHabitToAdjust,
+                onSave = weeklyReviewViewModel::save,
             )
         }
     }

@@ -21,6 +21,12 @@ enum class ResetLifeDestination(
         contentDescriptionRes = R.string.organize_nav_description,
         symbol = "✓",
     ),
+    WeeklyReview(
+        key = "weekly_review",
+        labelRes = R.string.weekly_review_nav,
+        contentDescriptionRes = R.string.weekly_review_nav_description,
+        symbol = "📅",
+    ),
     Onboarding(
         key = "onboarding",
         labelRes = R.string.onboarding_nav,

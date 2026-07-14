@@ -7,6 +7,7 @@ import br.com.resetlife.data.organize.OrganizeRepository
 import br.com.resetlife.data.today.PriorityRepository
 import br.com.resetlife.data.onboarding.UserProfileRepository
 import br.com.resetlife.data.wellbeing.WellbeingRepository
+import br.com.resetlife.data.weeklyreview.WeeklyReviewRepository
 
 class ResetLifeApplication : Application() {
     private val database by lazy {
@@ -29,5 +30,9 @@ class ResetLifeApplication : Application() {
 
     val wellbeingStore by lazy {
         WellbeingRepository(database.wellbeingCheckInDao())
+    }
+
+    val weeklyReviewStore by lazy {
+        WeeklyReviewRepository(database.weeklyReviewDao())
     }
 }

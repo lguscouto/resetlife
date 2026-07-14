@@ -13,6 +13,8 @@ import br.com.resetlife.data.local.onboarding.UserProfileDao
 import br.com.resetlife.data.local.onboarding.UserProfileEntity
 import br.com.resetlife.data.local.wellbeing.WellbeingCheckInDao
 import br.com.resetlife.data.local.wellbeing.WellbeingCheckInEntity
+import br.com.resetlife.data.local.weeklyreview.WeeklyReviewDao
+import br.com.resetlife.data.local.weeklyreview.WeeklyReviewEntity
 
 @Database(
     entities = [
@@ -21,9 +23,14 @@ import br.com.resetlife.data.local.wellbeing.WellbeingCheckInEntity
         TaskEntity::class,
         UserProfileEntity::class,
         WellbeingCheckInEntity::class,
+        WeeklyReviewEntity::class,
     ],
-    version = 4,
-    autoMigrations = [AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
+    version = 5,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
+    ],
     exportSchema = true,
 )
 abstract class ResetLifeDatabase : RoomDatabase() {
@@ -36,4 +43,6 @@ abstract class ResetLifeDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
 
     abstract fun wellbeingCheckInDao(): WellbeingCheckInDao
+
+    abstract fun weeklyReviewDao(): WeeklyReviewDao
 }
