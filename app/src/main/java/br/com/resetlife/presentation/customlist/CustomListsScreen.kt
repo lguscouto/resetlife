@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import br.com.resetlife.R
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
+import br.com.resetlife.presentation.components.ResetLifeEmptyState
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 
@@ -64,10 +65,11 @@ fun CustomListsScreen(
         }
 
         if (state.lists.isEmpty()) {
-            Text(
-                text = stringResource(R.string.custom_lists_empty),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ResetLifeEmptyState(
+                title = stringResource(R.string.empty_customlists),
+                description = stringResource(R.string.empty_customlists_hint),
+                actionLabel = stringResource(R.string.custom_lists_add),
+                onAction = onShowAddListDialog,
             )
         } else {
             FlowRow(
@@ -108,10 +110,11 @@ fun CustomListsScreen(
                     Text(stringResource(R.string.custom_lists_add_item))
                 }
                 if (state.items.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.custom_lists_items_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ResetLifeEmptyState(
+                        title = stringResource(R.string.empty_customlists),
+                        description = stringResource(R.string.custom_lists_items_empty),
+                        actionLabel = stringResource(R.string.custom_lists_add_item),
+                        onAction = onShowAddItemDialog,
                     )
                 } else {
                     state.items.forEach { item ->

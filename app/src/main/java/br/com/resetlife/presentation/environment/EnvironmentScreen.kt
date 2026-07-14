@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import br.com.resetlife.R
 import br.com.resetlife.domain.environment.EnvironmentTask
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
+import br.com.resetlife.presentation.components.ResetLifeEmptyState
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 
@@ -119,10 +120,11 @@ fun EnvironmentScreen(
         }
 
         if (state.tasks.isEmpty()) {
-            Text(
-                text = stringResource(R.string.environment_empty),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ResetLifeEmptyState(
+                title = stringResource(R.string.empty_environment),
+                description = stringResource(R.string.empty_environment_hint),
+                actionLabel = stringResource(R.string.environment_add_space),
+                onAction = onShowAddSpaceDialog,
             )
         } else {
             state.tasks.forEach { task ->
@@ -136,10 +138,9 @@ fun EnvironmentScreen(
             supportingText = stringResource(R.string.environment_discard_subtitle),
         )
         if (state.discardList.isEmpty()) {
-            Text(
-                text = stringResource(R.string.environment_discard_empty),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ResetLifeEmptyState(
+                title = stringResource(R.string.empty_environment),
+                description = stringResource(R.string.environment_discard_empty),
             )
         } else {
             state.discardList.forEach { task ->

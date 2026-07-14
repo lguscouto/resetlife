@@ -36,6 +36,21 @@
     <string name="no_active_priorities">As prioridades de hoje estão concluídas. Escolha um próximo passo quando quiser continuar.</string>
     <string name="active_priority_description">Prioridade pendente: %1$s</string>
     <string name="completed_priority_description">Prioridade concluída: %1$s</string>
+    <string name="empty_organize">Nenhum projeto ainda</string>
+    <string name="empty_organize_hint">Crie seu primeiro projeto para começar.</string>
+    <string name="empty_environment">Nenhum espaço</string>
+    <string name="empty_environment_hint">Adicione um espaço para organizar tarefas.</string>
+    <string name="empty_customlists">Nenhuma lista</string>
+    <string name="empty_customlists_hint">Crie uma lista personalizada.</string>
+    <string name="empty_wellbeing">Sem registros</string>
+    <string name="empty_wellbeing_hint">Faça seu primeiro check-in.</string>
+    <string name="empty_weekly">Sem revisão</string>
+    <string name="empty_weekly_hint">Registre sua revisão semanal.</string>
+    <string name="a11y_nav_hoje">Hoje</string>
+    <string name="a11y_nav_organizar">Organizar</string>
+    <string name="a11y_nav_vida">Vida</string>
+    <string name="a11y_nav_perfil">Perfil</string>
+
     <string name="organize_title">Organizar</string>
     <string name="organize_subtitle">Tire as ideias da cabeça e transforme-as em próximos passos.</string>
     <string name="project_section">Projetos</string>
