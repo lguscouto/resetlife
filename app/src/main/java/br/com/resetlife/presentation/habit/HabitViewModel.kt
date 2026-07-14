@@ -6,6 +6,8 @@ import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.domain.habit.Habit
 import br.com.resetlife.domain.habit.HabitFrequency
 import br.com.resetlife.domain.habit.HabitGoalType
+import br.com.resetlife.presentation.reward.RewardProvider
+import br.com.resetlife.presentation.reward.RewardType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +26,7 @@ data class HabitUiState(
     val showAddDialog: Boolean = false,
     val errorMessage: String? = null,
     val saved: Boolean = false,
+    val rewardMessage: String? = null,
 )
 
 class HabitViewModel(
@@ -58,8 +61,18 @@ class HabitViewModel(
 
     fun toggleToday(habit: Habit) {
         viewModelScope.launch {
+            val wasDone = _uiState.value.habits.firstOrNull { it.habit.id == habit.id }?.doneToday ?: false
             repository.toggleToday(habit)
+            if (!wasDone) {
+                _uiState.value = _uiState.value.copy(rewardMessage = RewardProvider.randomReward(RewardType.HABIT_DONE))
+            } else {
+                _uiState.value = _uiState.value.copy(rewardMessage = null)
+            }
         }
+    }
+
+    fun clearReward() {
+        _uiState.value = _uiState.value.copy(rewardMessage = null)
     }
 
     fun setQuantityToday(habit: Habit, value: Int) {

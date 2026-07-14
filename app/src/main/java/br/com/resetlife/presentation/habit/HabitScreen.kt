@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
+import br.com.resetlife.presentation.components.RewardMessage
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,8 +50,15 @@ fun HabitScreen(
     onShowAddDialog: () -> Unit,
     onHideAddDialog: () -> Unit,
     onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?) -> Unit,
+    onClearReward: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(state.rewardMessage) {
+        if (state.rewardMessage != null) {
+            kotlinx.coroutines.delay(3000)
+            onClearReward()
+        }
+    }
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
@@ -66,6 +75,10 @@ fun HabitScreen(
                 title = stringResource(R.string.habits_title),
                 supportingText = stringResource(R.string.habits_subtitle),
             )
+
+            if (state.rewardMessage != null) {
+                RewardMessage(text = state.rewardMessage!!)
+            }
 
             Button(
                 onClick = onShowAddDialog,

@@ -46,6 +46,9 @@ import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
+import br.com.resetlife.presentation.components.RewardMessage
+import br.com.resetlife.presentation.reward.RewardProvider
+import br.com.resetlife.presentation.reward.RewardType
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 import br.com.resetlife.presentation.theme.ResetLifeTheme
 
@@ -199,27 +202,33 @@ fun TodayScreen(
             }
 
             if (uiState.feedback != null && !(uiState.loadError && uiState.feedback == TodayFeedback.StorageError)) {
-                val feedbackText = when (uiState.feedback) {
-                    TodayFeedback.Added -> stringResource(R.string.priority_added)
-                    TodayFeedback.Completed -> stringResource(R.string.priority_completed)
-                    TodayFeedback.EmptyTitle -> stringResource(R.string.empty_priority_title)
-                    TodayFeedback.LimitReached -> stringResource(R.string.priority_limit_reached)
-                    TodayFeedback.StorageError -> stringResource(R.string.priority_storage_error)
+                when (uiState.feedback) {
+                    TodayFeedback.Added, TodayFeedback.Completed -> {
+                        RewardMessage(
+                            text = RewardProvider.randomReward(RewardType.PRIORITY_DONE),
+                        )
+                    }
+                    TodayFeedback.EmptyTitle -> {
+                        ResetLifeMessage(
+                            text = stringResource(R.string.empty_priority_title),
+                            tone = ResetLifeMessageTone.Error,
+                        )
+                    }
+                    TodayFeedback.LimitReached -> {
+                        ResetLifeMessage(
+                            text = stringResource(R.string.priority_limit_reached),
+                            tone = ResetLifeMessageTone.Error,
+                        )
+                    }
+                    TodayFeedback.StorageError -> {
+                        ResetLifeMessage(
+                            text = stringResource(R.string.priority_storage_error),
+                            tone = ResetLifeMessageTone.Error,
+                            actionLabel = stringResource(R.string.retry),
+                            onAction = onRetry,
+                        )
+                    }
                 }
-                ResetLifeMessage(
-                    text = feedbackText,
-                    tone = if (uiState.feedback == TodayFeedback.Added || uiState.feedback == TodayFeedback.Completed) {
-                        ResetLifeMessageTone.Success
-                    } else {
-                        ResetLifeMessageTone.Error
-                    },
-                    actionLabel = if (uiState.feedback == TodayFeedback.StorageError) {
-                        stringResource(R.string.retry)
-                    } else {
-                        null
-                    },
-                    onAction = if (uiState.feedback == TodayFeedback.StorageError) onRetry else null,
-                )
             }
 
             if (uiState.isLoading) {
@@ -269,7 +278,12 @@ fun TodayScreen(
 
                     if (uiState.completedPriorities.isNotEmpty()) {
                         item {
-                            Spacer(modifier = Modifier.height(ResetLifeSpacing.sm))
+                            if (uiState.activePriorities.isEmpty()) {
+                                RewardMessage(
+                                    text = RewardProvider.randomReward(RewardType.ALL_DONE),
+                                )
+                                Spacer(modifier = Modifier.height(ResetLifeSpacing.sm))
+                            }
                             ResetLifeSectionHeader(
                                 title = stringResource(R.string.completed_priorities_section),
                                 supportingText = stringResource(R.string.completed_priorities_hint),

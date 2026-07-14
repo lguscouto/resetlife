@@ -231,6 +231,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onShowAddDialog = habitViewModel::showAddDialog,
                 onHideAddDialog = habitViewModel::hideAddDialog,
                 onAddHabit = habitViewModel::addHabit,
+                onClearReward = habitViewModel::clearReward,
             )
 
             ResetLifeDestination.Environment -> EnvironmentScreen(
