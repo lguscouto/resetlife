@@ -22,6 +22,7 @@ import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
+import br.com.resetlife.presentation.habit.parseHabitColor
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 
 @Composable
@@ -109,6 +110,7 @@ fun HabitDetailScreen(
                 ResetLifeSectionHeader(title = stringResource(R.string.habit_calendar_title))
                 StreakCalendar(
                     doneDates = state.logs.filter { it.done }.map { it.date }.toSet(),
+                    accentColor = state.habit?.colorHex?.let { parseHabitColor(it) },
                 )
             }
 

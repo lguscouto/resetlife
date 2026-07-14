@@ -13,6 +13,7 @@ fun HabitEntity.toDomain(): Habit = Habit(
     active = active,
     paused = paused,
     createdAt = createdAt,
+    colorHex = colorHex,
 )
 
 fun Habit.toEntity(): HabitEntity = HabitEntity(
@@ -25,6 +26,7 @@ fun Habit.toEntity(): HabitEntity = HabitEntity(
     active = active,
     paused = paused,
     createdAt = createdAt,
+    colorHex = colorHex,
 )
 
 fun HabitLogEntity.toDomain(): HabitLog = HabitLog(

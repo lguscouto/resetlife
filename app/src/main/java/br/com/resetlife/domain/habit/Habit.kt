@@ -20,6 +20,7 @@ data class Habit(
     val active: Boolean = true,
     val paused: Boolean = false,
     val createdAt: String,
+    val colorHex: String? = null, // cor opcional (#RRGGBB); null = cor padrão do tema
 ) {
     fun isLoggableOn(date: String): Boolean {
         if (!active || paused) return false
@@ -38,6 +39,7 @@ data class Habit(
             targetValue: Int? = null,
             unit: String? = null,
             createdAt: String,
+            colorHex: String? = null,
         ): HabitCreationResult {
             val normalized = name.trim()
             if (normalized.isEmpty()) return HabitCreationResult.EmptyName
@@ -54,6 +56,7 @@ data class Habit(
                     targetValue = if (goalType == HabitGoalType.QUANTITY) (targetValue ?: 1) else null,
                     unit = if (goalType == HabitGoalType.QUANTITY) unit?.trim()?.takeIf { it.isNotEmpty() } else null,
                     createdAt = createdAt,
+                    colorHex = colorHex?.trim()?.takeIf { it.isNotEmpty() },
                 ),
             )
         }

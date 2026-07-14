@@ -24,6 +24,7 @@ open class HabitRepository(private val dao: HabitDao) {
         goalType: HabitGoalType,
         targetValue: Int?,
         unit: String?,
+        colorHex: String? = null,
     ): HabitCreationResult {
         val result = Habit.create(
             id = UUID.randomUUID().toString(),
@@ -33,6 +34,7 @@ open class HabitRepository(private val dao: HabitDao) {
             targetValue = targetValue,
             unit = unit,
             createdAt = LocalDate.now().toString(),
+            colorHex = colorHex,
         )
         if (result is HabitCreationResult.Created) {
             dao.insert(result.habit.toEntity())

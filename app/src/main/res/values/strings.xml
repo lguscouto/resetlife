@@ -179,6 +179,8 @@
     <string name="habit_goal_quantity">Quantidade</string>
     <string name="habit_target">Meta (valor)</string>
     <string name="habit_unit">Unidade (ex: copos, min)</string>
+    <string name="habit_color">Cor</string>
+    <string name="habit_color_hint">Escolha uma cor para o hábito</string>
 
     <!-- Habit detail / streak -->
     <string name="habit_detail_title">Detalhe do hábito</string>

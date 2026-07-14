@@ -107,9 +107,10 @@ class HabitViewModel(
         goalType: HabitGoalType,
         targetValue: Int?,
         unit: String?,
+        colorHex: String? = null,
     ) {
         viewModelScope.launch {
-            when (val result = repository.add(name, frequency, goalType, targetValue, unit)) {
+            when (val result = repository.add(name, frequency, goalType, targetValue, unit, colorHex)) {
                 is br.com.resetlife.domain.habit.HabitCreationResult.Created -> {
                     _uiState.value = _uiState.value.copy(showAddDialog = false, errorMessage = null, saved = true)
                 }

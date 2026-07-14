@@ -1,13 +1,19 @@
 package br.com.resetlife.presentation.habit
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -26,6 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import br.com.resetlife.R
 import br.com.resetlife.domain.habit.HabitFrequency
@@ -35,6 +44,8 @@ import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.components.RewardMessage
+import br.com.resetlife.presentation.habit.HABIT_COLOR_PALETTE
+import br.com.resetlife.presentation.habit.parseHabitColor
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +60,7 @@ fun HabitScreen(
     onOpenDetail: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onShowAddDialog: () -> Unit,
     onHideAddDialog: () -> Unit,
-    onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?) -> Unit,
+    onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?, String?) -> Unit,
     onClearReward: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -148,6 +159,9 @@ private fun HabitRow(
                 Checkbox(
                     checked = item.doneToday,
                     onCheckedChange = { onToggleToday(item.habit) },
+                    colors = androidx.compose.material3.CheckboxDefaults.colors(
+                        checkedColor = item.habit.colorHex?.let { parseHabitColor(it) } ?: MaterialTheme.colorScheme.primary,
+                    ),
                 )
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -210,13 +224,14 @@ private fun HabitRow(
 private fun AddHabitDialog(
     errorMessage: String?,
     onDismiss: () -> Unit,
-    onAdd: (String, HabitFrequency, HabitGoalType, Int?, String?) -> Unit,
+    onAdd: (String, HabitFrequency, HabitGoalType, Int?, String?, String?) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var frequency by remember { mutableStateOf(HabitFrequency.DAILY) }
     var goalType by remember { mutableStateOf(HabitGoalType.BINARY) }
     var targetValue by remember { mutableStateOf("") }
     var unit by remember { mutableStateOf("") }
+    var selectedColorHex by remember { mutableStateOf<String?>(null) }
 
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
@@ -224,7 +239,7 @@ private fun AddHabitDialog(
             TextButton(
                 onClick = {
                     val target = targetValue.toIntOrNull()
-                    onAdd(name, frequency, goalType, target, unit.takeIf { it.isNotBlank() })
+                    onAdd(name, frequency, goalType, target, unit.takeIf { it.isNotBlank() }, selectedColorHex)
                 },
             ) {
                 Text(text = stringResource(R.string.habit_save))
@@ -244,6 +259,41 @@ private fun AddHabitDialog(
                     label = { Text(stringResource(R.string.habit_name)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
+                Text(
+                    text = stringResource(R.string.habit_color),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(R.string.habit_color_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.sm),
+                ) {
+                    HABIT_COLOR_PALETTE.forEach { habitColor ->
+                        val isSelected = selectedColorHex == habitColor.hex
+                        val color = parseHabitColor(habitColor.hex) ?: MaterialTheme.colorScheme.primary
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(color)
+                                .border(
+                                    width = if (isSelected) 3.dp else 1.dp,
+                                    color = if (isSelected) {
+                                        MaterialTheme.colorScheme.onSurface
+                                    } else {
+                                        MaterialTheme.colorScheme.outlineVariant
+                                    },
+                                    shape = RoundedCornerShape(10.dp),
+                                )
+                                .clickable { selectedColorHex = habitColor.hex },
+                        )
+                    }
+                }
                 if (errorMessage != null) {
                     Text(
                         text = errorMessage,

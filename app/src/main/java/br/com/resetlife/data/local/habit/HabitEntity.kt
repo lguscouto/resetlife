@@ -15,4 +15,5 @@ data class HabitEntity(
     val active: Boolean,
     val paused: Boolean,
     val createdAt: String,
+    val colorHex: String? = null, // cor opcional (#RRGGBB); null = cor padrão do tema
 )

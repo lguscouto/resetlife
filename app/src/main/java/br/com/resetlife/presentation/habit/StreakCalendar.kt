@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -31,17 +32,20 @@ import java.time.LocalDate
 /**
  * Heatmap de streak: grade 7 colunas x 5 linhas (35 células) representando
  * os ~35 dias até hoje. Cada célula é pintada conforme o dia foi concluído.
+ * [accentColor] opcional: cor do hábito usada nas células concluídas; se nula,
+ * usa a cor de sucesso do tema.
  */
 @Composable
 fun StreakCalendar(
     doneDates: Set<String>,
     modifier: Modifier = Modifier,
+    accentColor: Color? = null,
 ) {
     val today = remember { LocalDate.now() }
     val days: List<LocalDate> = remember(today) {
         (0 until 35).map { today.minusDays((34 - it).toLong()) }
     }
-    val colors = LocalResetLifeColors.current
+    val doneColor = accentColor ?: LocalResetLifeColors.current.success
 
     Column(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -58,7 +62,7 @@ fun StreakCalendar(
                         val day = days.getOrNull(index) ?: return@Row
                         val dateStr = day.toString()
                         val done = doneDates.contains(dateStr)
-                        val cellColor = if (done) colors.success else MaterialTheme.colorScheme.surfaceVariant
+                        val cellColor = if (done) doneColor else MaterialTheme.colorScheme.surfaceVariant
                         val textColor = if (done) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         val description = if (done) {
                             stringResource(R.string.habit_calendar_done) + " " + dateStr
@@ -97,7 +101,7 @@ fun StreakCalendar(
             horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            LegendDot(color = colors.success)
+            LegendDot(color = doneColor)
             Text(
                 text = stringResource(R.string.habit_calendar_done),
                 style = MaterialTheme.typography.bodySmall,
