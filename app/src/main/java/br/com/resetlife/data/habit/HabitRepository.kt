@@ -6,6 +6,7 @@ import br.com.resetlife.domain.habit.HabitCreationResult
 import br.com.resetlife.domain.habit.HabitGoalType
 import br.com.resetlife.domain.habit.HabitLog
 import br.com.resetlife.domain.habit.HabitFrequency
+import br.com.resetlife.domain.habit.HabitType
 import br.com.resetlife.domain.habit.toDomain
 import br.com.resetlife.domain.habit.toEntity
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,7 @@ open class HabitRepository(private val dao: HabitDao) {
         targetValue: Int?,
         unit: String?,
         colorHex: String? = null,
+        type: HabitType = HabitType.HABIT,
     ): HabitCreationResult {
         val result = Habit.create(
             id = UUID.randomUUID().toString(),
@@ -35,6 +37,7 @@ open class HabitRepository(private val dao: HabitDao) {
             unit = unit,
             createdAt = LocalDate.now().toString(),
             colorHex = colorHex,
+            type = type,
         )
         if (result is HabitCreationResult.Created) {
             dao.insert(result.habit.toEntity())

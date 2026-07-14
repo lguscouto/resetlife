@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import br.com.resetlife.R
 import br.com.resetlife.domain.habit.HabitFrequency
 import br.com.resetlife.domain.habit.HabitGoalType
+import br.com.resetlife.domain.habit.HabitType
 import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
@@ -47,6 +48,7 @@ import br.com.resetlife.presentation.components.RewardMessage
 import br.com.resetlife.presentation.habit.HABIT_COLOR_PALETTE
 import br.com.resetlife.presentation.habit.parseHabitColor
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
+import br.com.resetlife.presentation.theme.LocalResetLifeColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +62,7 @@ fun HabitScreen(
     onOpenDetail: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onShowAddDialog: () -> Unit,
     onHideAddDialog: () -> Unit,
-    onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?, String?) -> Unit,
+    onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?, String?, HabitType) -> Unit,
     onClearReward: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -160,7 +162,12 @@ private fun HabitRow(
                     checked = item.doneToday,
                     onCheckedChange = { onToggleToday(item.habit) },
                     colors = androidx.compose.material3.CheckboxDefaults.colors(
-                        checkedColor = item.habit.colorHex?.let { parseHabitColor(it) } ?: MaterialTheme.colorScheme.primary,
+                        checkedColor = item.habit.colorHex?.let { parseHabitColor(it) }
+                            ?: if (item.habit.type == HabitType.AVOID) {
+                                LocalResetLifeColors.current.warning
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            },
                     ),
                 )
                 Column(modifier = Modifier.weight(1f)) {
@@ -170,7 +177,11 @@ private fun HabitRow(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     val detail = when (item.habit.goalType) {
-                        HabitGoalType.BINARY -> if (item.habit.paused) stringResource(R.string.habit_paused) else stringResource(R.string.habit_daily)
+                        HabitGoalType.BINARY -> when {
+                            item.habit.paused -> stringResource(R.string.habit_paused)
+                            item.habit.type == HabitType.AVOID -> if (item.doneToday) stringResource(R.string.habit_avoid_done) else stringResource(R.string.habit_avoid_daily)
+                            else -> stringResource(R.string.habit_daily)
+                        }
                         HabitGoalType.QUANTITY -> {
                             val target = item.habit.targetValue ?: 1
                             val unit = item.habit.unit ?: ""
@@ -224,7 +235,7 @@ private fun HabitRow(
 private fun AddHabitDialog(
     errorMessage: String?,
     onDismiss: () -> Unit,
-    onAdd: (String, HabitFrequency, HabitGoalType, Int?, String?, String?) -> Unit,
+    onAdd: (String, HabitFrequency, HabitGoalType, Int?, String?, String?, HabitType) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
     var frequency by remember { mutableStateOf(HabitFrequency.DAILY) }
@@ -232,6 +243,7 @@ private fun AddHabitDialog(
     var targetValue by remember { mutableStateOf("") }
     var unit by remember { mutableStateOf("") }
     var selectedColorHex by remember { mutableStateOf<String?>(null) }
+    var habitType by remember { mutableStateOf(HabitType.HABIT) }
 
     androidx.compose.material3.AlertDialog(
         onDismissRequest = onDismiss,
@@ -239,7 +251,7 @@ private fun AddHabitDialog(
             TextButton(
                 onClick = {
                     val target = targetValue.toIntOrNull()
-                    onAdd(name, frequency, goalType, target, unit.takeIf { it.isNotBlank() }, selectedColorHex)
+                    onAdd(name, frequency, goalType, target, unit.takeIf { it.isNotBlank() }, selectedColorHex, habitType)
                 },
             ) {
                 Text(text = stringResource(R.string.habit_save))
@@ -292,6 +304,28 @@ private fun AddHabitDialog(
                                 )
                                 .clickable { selectedColorHex = habitColor.hex },
                         )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.habit_type),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.sm),
+                ) {
+                    OutlinedButton(
+                        onClick = { habitType = HabitType.HABIT },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(text = stringResource(R.string.habit_type_habit))
+                    }
+                    OutlinedButton(
+                        onClick = { habitType = HabitType.AVOID },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(text = stringResource(R.string.habit_type_avoid))
                     }
                 }
                 if (errorMessage != null) {

@@ -1,5 +1,6 @@
 package br.com.resetlife.data.local.habit
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,4 +17,6 @@ data class HabitEntity(
     val paused: Boolean,
     val createdAt: String,
     val colorHex: String? = null, // cor opcional (#RRGGBB); null = cor padrão do tema
+    @ColumnInfo(defaultValue = "HABIT")
+    val type: String = "HABIT", // "HABIT" | "AVOID"
 )

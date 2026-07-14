@@ -6,6 +6,7 @@ import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.domain.habit.Habit
 import br.com.resetlife.domain.habit.HabitFrequency
 import br.com.resetlife.domain.habit.HabitGoalType
+import br.com.resetlife.domain.habit.HabitType
 import br.com.resetlife.presentation.reward.RewardProvider
 import br.com.resetlife.presentation.reward.RewardType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,9 +109,10 @@ class HabitViewModel(
         targetValue: Int?,
         unit: String?,
         colorHex: String? = null,
+        type: HabitType = HabitType.HABIT,
     ) {
         viewModelScope.launch {
-            when (val result = repository.add(name, frequency, goalType, targetValue, unit, colorHex)) {
+            when (val result = repository.add(name, frequency, goalType, targetValue, unit, colorHex, type)) {
                 is br.com.resetlife.domain.habit.HabitCreationResult.Created -> {
                     _uiState.value = _uiState.value.copy(showAddDialog = false, errorMessage = null, saved = true)
                 }

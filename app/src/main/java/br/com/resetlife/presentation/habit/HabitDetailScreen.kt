@@ -18,12 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import br.com.resetlife.R
+import br.com.resetlife.domain.habit.HabitType
 import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.habit.parseHabitColor
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
+import br.com.resetlife.presentation.theme.LocalResetLifeColors
 
 @Composable
 fun HabitDetailScreen(
@@ -50,6 +52,35 @@ fun HabitDetailScreen(
                 title = state.habit?.name ?: stringResource(R.string.habit_detail_title),
                 supportingText = stringResource(R.string.habit_detail_subtitle),
             )
+
+            state.habit?.let { habit ->
+                ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.padding(ResetLifeSpacing.md),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.sm),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.habit_type),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = if (habit.type == HabitType.AVOID) {
+                                stringResource(R.string.habit_type_avoid)
+                            } else {
+                                stringResource(R.string.habit_type_habit)
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (habit.type == HabitType.AVOID) {
+                                LocalResetLifeColors.current.warning
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
+                        )
+                    }
+                }
+            }
 
             OutlinedButton(
                 onClick = onBack,

@@ -181,6 +181,11 @@
     <string name="habit_unit">Unidade (ex: copos, min)</string>
     <string name="habit_color">Cor</string>
     <string name="habit_color_hint">Escolha uma cor para o hábito</string>
+    <string name="habit_type">Tipo</string>
+    <string name="habit_type_habit">Hábito</string>
+    <string name="habit_type_avoid">Evitar</string>
+    <string name="habit_avoid_done">Evitei</string>
+    <string name="habit_avoid_daily">Para evitar</string>
 
     <!-- Habit detail / streak -->
     <string name="habit_detail_title">Detalhe do hábito</string>

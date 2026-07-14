@@ -14,6 +14,7 @@ fun HabitEntity.toDomain(): Habit = Habit(
     paused = paused,
     createdAt = createdAt,
     colorHex = colorHex,
+    type = if (type == "AVOID") HabitType.AVOID else HabitType.HABIT,
 )
 
 fun Habit.toEntity(): HabitEntity = HabitEntity(
@@ -27,6 +28,7 @@ fun Habit.toEntity(): HabitEntity = HabitEntity(
     paused = paused,
     createdAt = createdAt,
     colorHex = colorHex,
+    type = if (type == HabitType.AVOID) "AVOID" else "HABIT",
 )
 
 fun HabitLogEntity.toDomain(): HabitLog = HabitLog(
