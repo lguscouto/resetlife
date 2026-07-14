@@ -16,6 +16,7 @@ import br.com.resetlife.ResetLifeApplication
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
 import br.com.resetlife.presentation.navigation.ResetLifeNavigationBar
 import br.com.resetlife.presentation.onboarding.OnboardingScreen
+import br.com.resetlife.presentation.onboarding.OnboardingUiState
 import br.com.resetlife.presentation.onboarding.OnboardingViewModel
 import br.com.resetlife.presentation.onboarding.OnboardingViewModelFactory
 import br.com.resetlife.presentation.organize.OrganizeScreen
@@ -27,11 +28,23 @@ import br.com.resetlife.presentation.today.TodayViewModelFactory
 
 @Composable
 fun ResetLifeApp(application: ResetLifeApplication) {
-    var selectedKey by rememberSaveable { mutableStateOf(ResetLifeDestination.Today.key) }
+    val onboardingViewModel: OnboardingViewModel = viewModel(
+        factory = OnboardingViewModelFactory(application.userProfileStore),
+    )
+    val userProfileState by onboardingViewModel.uiState.collectAsState(initial = OnboardingUiState())
+
+    // Redireciona para onboarding se não completado
+    val startDestination = if (userProfileState.onboardingCompleted) {
+        ResetLifeDestination.Today
+    } else {
+        ResetLifeDestination.Onboarding
+    }
+
+    var selectedKey by rememberSaveable { mutableStateOf(startDestination.key) }
     val selectedDestination = ResetLifeDestination.entries.firstOrNull { it.key == selectedKey }
         ?: ResetLifeDestination.Today
 
-    BackHandler(enabled = selectedDestination != ResetLifeDestination.Today) {
+    BackHandler(enabled = selectedDestination != ResetLifeDestination.Today && selectedDestination != ResetLifeDestination.Onboarding) {
         selectedKey = ResetLifeDestination.Today.key
     }
 
@@ -40,9 +53,6 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     )
     val organizeViewModel: OrganizeViewModel = viewModel(
         factory = OrganizeViewModelFactory(application.organizeStore, application.priorityStore),
-    )
-    val onboardingViewModel: OnboardingViewModel = viewModel(
-        factory = OnboardingViewModelFactory(application.userProfileStore),
     )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
@@ -89,6 +99,11 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 selectedArea = onboardingState.selectedArea,
                 onAreaSelected = onboardingViewModel::selectArea,
                 onNext = onboardingViewModel::nextStep,
+                step = onboardingState.step,
+                selectedMinutes = onboardingState.availableMinutes,
+                onMinutesSelected = onboardingViewModel::setAvailableMinutes,
+                selectedDuration = onboardingState.planDurationDays,
+                onDurationSelected = onboardingViewModel::setPlanDuration,
             )
         }
     }

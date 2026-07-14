@@ -16,8 +16,8 @@ android {
         applicationId = "br.com.resetlife"
         minSdk = 29
         targetSdk = 35
-        versionCode = 13
-        versionName = "0.4.0"
+        versionCode = 14
+        versionName = "0.4.0-rc1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
