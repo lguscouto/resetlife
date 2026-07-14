@@ -17,6 +17,7 @@ data class CheckInUiState(
     val sleepPerceived: Int? = null,
     val note: String = "",
     val saved: Boolean = false,
+    val alreadyDoneToday: Boolean = false,
 )
 
 class CheckInViewModel(
@@ -24,6 +25,15 @@ class CheckInViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CheckInUiState())
     val uiState: StateFlow<CheckInUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val today = LocalDate.now().toString()
+            repository.observeDate(today).collect { existing ->
+                _uiState.value = _uiState.value.copy(alreadyDoneToday = existing != null)
+            }
+        }
+    }
 
     fun setMood(value: Int) {
         _uiState.value = _uiState.value.copy(mood = value)
@@ -59,7 +69,7 @@ class CheckInViewModel(
                     note = state.note.takeIf { it.isNotBlank() },
                 ),
             )
-            _uiState.value = state.copy(saved = true)
+            _uiState.value = state.copy(saved = true, alreadyDoneToday = true)
         }
     }
 }

@@ -129,6 +129,7 @@
     <string name="note_label">Nota (opcional)</string>
     <string name="save_checkin">Salvar check-in</string>
     <string name="checkin_saved">Check-in salvo.</string>
+    <string name="checkin_already_today">Você já fez o check-in de hoje. Pode editar e salvar de novo quando quiser.</string>
     <string name="mood_very_low">Muito baixo</string>
     <string name="mood_low">Baixo</string>
     <string name="mood_neutral">Neutro</string>

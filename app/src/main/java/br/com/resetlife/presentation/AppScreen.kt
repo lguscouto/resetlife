@@ -90,6 +90,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
             ResetLifeNavigationBar(
                 selectedDestination = selectedDestination,
                 onDestinationSelected = { destination -> selectedKey = destination.key },
+                onboardingCompleted = userProfileState.onboardingCompleted,
             )
         },
     ) { innerPadding ->

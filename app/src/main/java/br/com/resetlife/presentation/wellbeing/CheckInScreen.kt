@@ -17,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import br.com.resetlife.R
+import br.com.resetlife.presentation.components.ResetLifeMessage
+import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
@@ -49,6 +51,13 @@ fun CheckInScreen(
                 supportingText = stringResource(R.string.wellbeing_subtitle),
             )
 
+            if (state.alreadyDoneToday) {
+                ResetLifeMessage(
+                    text = stringResource(R.string.checkin_already_today),
+                    tone = ResetLifeMessageTone.Success,
+                )
+            }
+
             CheckInSlider(
                 label = stringResource(R.string.mood_label),
                 value = state.mood,
@@ -73,6 +82,7 @@ fun CheckInScreen(
             Button(
                 onClick = onSave,
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !state.alreadyDoneToday,
             ) {
                 Text(text = stringResource(R.string.save_checkin))
             }

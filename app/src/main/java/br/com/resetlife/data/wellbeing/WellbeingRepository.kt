@@ -12,6 +12,9 @@ class WellbeingRepository(private val dao: WellbeingCheckInDao) {
         list.map { it.toDomain() }
     }
 
+    fun observeDate(date: String): Flow<WellbeingCheckIn?> =
+        dao.observeDate(date).map { it?.toDomain() }
+
     suspend fun get(date: String): WellbeingCheckIn? = dao.get(date)?.toDomain()
 
     suspend fun upsert(checkin: WellbeingCheckIn) {

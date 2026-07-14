@@ -10,6 +10,9 @@ interface WellbeingCheckInDao {
     @Query("SELECT * FROM wellbeing_checkin WHERE date = :date")
     suspend fun get(date: String): WellbeingCheckInEntity?
 
+    @Query("SELECT * FROM wellbeing_checkin WHERE date = :date")
+    fun observeDate(date: String): Flow<WellbeingCheckInEntity?>
+
     @Query("SELECT * FROM wellbeing_checkin ORDER BY date DESC")
     fun observeAll(): Flow<List<WellbeingCheckInEntity>>
 
