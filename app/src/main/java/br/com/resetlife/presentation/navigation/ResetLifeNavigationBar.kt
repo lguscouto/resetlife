@@ -19,23 +19,13 @@ import androidx.compose.ui.res.stringResource
 fun ResetLifeNavigationBar(
     selectedDestination: ResetLifeDestination,
     onDestinationSelected: (ResetLifeDestination) -> Unit,
-    onboardingCompleted: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    val visibleDestinations = if (onboardingCompleted) {
-        ResetLifeDestination.entries
-    } else {
-        // Durante o onboarding, mostra apenas Hoje e Onboarding
-        ResetLifeDestination.entries.filter {
-            it == ResetLifeDestination.Today || it == ResetLifeDestination.Onboarding
-        }
-    }
-
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        visibleDestinations.forEach { destination ->
+        bottomTabs.forEach { destination ->
             val description = stringResource(destination.contentDescriptionRes)
             NavigationBarItem(
                 selected = destination == selectedDestination,

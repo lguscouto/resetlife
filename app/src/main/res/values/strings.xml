@@ -6,6 +6,10 @@
     <string name="organize_nav_description">Abrir projetos e tarefas</string>
     <string name="habits_nav">Hábitos</string>
     <string name="habits_nav_description">Abrir hábitos e rotinas</string>
+    <string name="life_nav">Vida</string>
+    <string name="life_nav_description">Hábitos, bem-estar e rotina</string>
+    <string name="profile_nav">Perfil</string>
+    <string name="profile_nav_description">Revisão, configurações e dados</string>
     <string name="weekly_review_nav">Revisão</string>
     <string name="today_title">Prioridades de hoje</string>
     <string name="today_subtitle">Escolha o próximo passo que importa.</string>
@@ -173,4 +177,17 @@
     <string name="habit_goal_quantity">Quantidade</string>
     <string name="habit_target">Meta (valor)</string>
     <string name="habit_unit">Unidade (ex: copos, min)</string>
+
+    <!-- Life hub -->
+    <string name="life_title">Vida</string>
+    <string name="life_subtitle">Hábitos e bem-estar que sustentam o reset.</string>
+    <string name="life_habits_hint">Rotinas diárias e metas simples de consistência.</string>
+    <string name="life_wellbeing_hint">Check-in de humor, energia, estresse e sono.</string>
+
+    <!-- Profile hub -->
+    <string name="profile_title">Perfil</string>
+    <string name="profile_subtitle">Sua evolução e configurações do app.</string>
+    <string name="profile_review_hint">Feche a semana e planeje a próxima.</string>
+    <string name="profile_settings">Configurações</string>
+    <string name="profile_settings_hint">Tema, dados, privacidade e notificações.</string>
 </resources>

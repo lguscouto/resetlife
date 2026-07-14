@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.resetlife.ResetLifeApplication
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
 import br.com.resetlife.presentation.navigation.ResetLifeNavigationBar
+import br.com.resetlife.presentation.navigation.bottomTabFor
 import br.com.resetlife.presentation.onboarding.OnboardingScreen
 import br.com.resetlife.presentation.onboarding.OnboardingUiState
 import br.com.resetlife.presentation.onboarding.OnboardingViewModel
@@ -35,6 +36,8 @@ import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModelFactory
 import br.com.resetlife.presentation.habit.HabitScreen
 import br.com.resetlife.presentation.habit.HabitViewModel
 import br.com.resetlife.presentation.habit.HabitViewModelFactory
+import br.com.resetlife.presentation.life.LifeScreen
+import br.com.resetlife.presentation.profile.ProfileScreen
 
 @Composable
 fun ResetLifeApp(application: ResetLifeApplication) {
@@ -61,8 +64,14 @@ fun ResetLifeApp(application: ResetLifeApplication) {
         }
     }
 
-    BackHandler(enabled = selectedDestination != ResetLifeDestination.Today && selectedDestination != ResetLifeDestination.Onboarding) {
-        selectedKey = ResetLifeDestination.Today.key
+    BackHandler(enabled = selectedKey != ResetLifeDestination.Today.key && selectedKey != ResetLifeDestination.Onboarding.key) {
+        // Se estiver num filho de hub, volta para o hub pai; senão, volta para Hoje
+        val current = selectedDestination
+        selectedKey = if (!current.isBottomTab) {
+            (current.parentTab ?: ResetLifeDestination.Today).key
+        } else {
+            ResetLifeDestination.Today.key
+        }
     }
 
     val todayViewModel: TodayViewModel = viewModel(
@@ -95,9 +104,8 @@ fun ResetLifeApp(application: ResetLifeApplication) {
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             ResetLifeNavigationBar(
-                selectedDestination = selectedDestination,
+                selectedDestination = selectedDestination.bottomTabFor(),
                 onDestinationSelected = { destination -> selectedKey = destination.key },
-                onboardingCompleted = userProfileState.onboardingCompleted,
             )
         },
     ) { innerPadding ->
@@ -127,6 +135,16 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onToggleTask = organizeViewModel::toggleTask,
                 onPromoteToToday = organizeViewModel::promoteToToday,
                 onRetry = organizeViewModel::retryStorageOperation,
+            )
+
+            ResetLifeDestination.Life -> LifeScreen(
+                modifier = Modifier.padding(innerPadding),
+                onNavigate = { destination -> selectedKey = destination.key },
+            )
+
+            ResetLifeDestination.Profile -> ProfileScreen(
+                modifier = Modifier.padding(innerPadding),
+                onNavigate = { destination -> selectedKey = destination.key },
             )
 
             ResetLifeDestination.Onboarding -> OnboardingScreen(
