@@ -38,6 +38,7 @@ class TodayEnvironmentSuggestionTest {
                 override suspend fun insertCustomList(entity: br.com.resetlife.data.local.environment.CustomListEntity) {}
                 override suspend fun deleteCustomList(id: String) {}
                 override fun observeCustomListItems(listId: String): kotlinx.coroutines.flow.Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> = flowOf(emptyList())
+                override fun observeAllCustomListItems(): kotlinx.coroutines.flow.Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> = flowOf(emptyList())
                 override suspend fun insertCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
                 override suspend fun updateCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
                 override suspend fun deleteCustomListItem(itemId: String) {}
@@ -69,6 +70,7 @@ class TodayEnvironmentSuggestionTest {
                 override suspend fun insertCustomList(entity: br.com.resetlife.data.local.environment.CustomListEntity) {}
                 override suspend fun deleteCustomList(id: String) {}
                 override fun observeCustomListItems(listId: String): kotlinx.coroutines.flow.Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> = flowOf(emptyList())
+                override fun observeAllCustomListItems(): kotlinx.coroutines.flow.Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> = flowOf(emptyList())
                 override suspend fun insertCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
                 override suspend fun updateCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
                 override suspend fun deleteCustomListItem(itemId: String) {}

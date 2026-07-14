@@ -52,6 +52,9 @@ interface EnvironmentDao {
     @Query("SELECT * FROM custom_list_item WHERE listId = :listId ORDER BY title")
     fun observeCustomListItems(listId: String): Flow<List<CustomListItemEntity>>
 
+    @Query("SELECT * FROM custom_list_item ORDER BY title")
+    fun observeAllCustomListItems(): Flow<List<CustomListItemEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCustomListItem(item: CustomListItemEntity)
 

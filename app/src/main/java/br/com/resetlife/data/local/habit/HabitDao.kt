@@ -31,6 +31,9 @@ interface HabitDao {
     @Query("SELECT * FROM habit_log WHERE date = :date")
     fun observeLogsByDate(date: String): Flow<List<HabitLogEntity>>
 
+    @Query("SELECT * FROM habit_log ORDER BY date DESC")
+    fun observeAllLogs(): Flow<List<HabitLogEntity>>
+
     @Query("SELECT * FROM habit_log WHERE date = :date")
     suspend fun getLogsByDate(date: String): List<HabitLogEntity>
 

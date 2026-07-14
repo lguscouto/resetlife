@@ -13,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.SaveAlt
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,11 +27,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import br.com.resetlife.R
+import br.com.resetlife.presentation.components.ResetLifeMessage
+import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
@@ -41,11 +48,23 @@ import br.com.resetlife.presentation.theme.ThemeMode
 fun ProfileScreen(
     themeManager: ThemeManager,
     onNavigate: (ResetLifeDestination) -> Unit,
+    dataExportViewModel: DataExportViewModel,
     modifier: Modifier = Modifier,
 ) {
     val currentThemeMode by themeManager.themeMode.collectAsStateWithLifecycle(ThemeMode.SYSTEM)
+    val exportState by dataExportViewModel.uiState.collectAsStateWithLifecycle()
     var showThemeSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json"),
+        onResult = { uri ->
+            if (uri != null) {
+                dataExportViewModel.exportTo(uri, context)
+            }
+        },
+    )
 
     if (showThemeSheet) {
         ThemeSettingsBottomSheet(
@@ -81,6 +100,74 @@ fun ProfileScreen(
             icon = Icons.Filled.Palette,
             onClick = { showThemeSheet = true },
         )
+        val exportFilename = stringResource(R.string.data_export_filename)
+        DataCard(
+            title = stringResource(R.string.data_export_title),
+            description = stringResource(R.string.data_export_hint),
+            buttonLabel = stringResource(R.string.data_export_button),
+            exporting = exportState.status == ExportStatus.Exporting,
+            onExport = { exportLauncher.launch(exportFilename) },
+        )
+        when (exportState.status) {
+            ExportStatus.Done -> ResetLifeMessage(
+                text = stringResource(R.string.data_export_success),
+                tone = ResetLifeMessageTone.Success,
+            )
+            ExportStatus.Error -> ResetLifeMessage(
+                text = stringResource(R.string.data_export_error),
+                tone = ResetLifeMessageTone.Error,
+            )
+            else -> Unit
+        }
+    }
+}
+
+@Composable
+private fun DataCard(
+    title: String,
+    description: String,
+    buttonLabel: String,
+    exporting: Boolean,
+    onExport: () -> Unit,
+) {
+    ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(ResetLifeSpacing.md),
+            verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.md),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.md),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.SaveAlt,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.xs),
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Button(
+                onClick = onExport,
+                enabled = !exporting,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(buttonLabel)
+            }
+        }
     }
 }
 

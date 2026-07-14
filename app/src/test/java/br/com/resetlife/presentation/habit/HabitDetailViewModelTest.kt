@@ -130,6 +130,9 @@ private class FakeHabitDao : HabitDao {
     override fun observeLogsByDate(date: String) =
         flowOf(emptyList<br.com.resetlife.data.local.habit.HabitLogEntity>())
 
+    override fun observeAllLogs() =
+        flowOf(emptyList<br.com.resetlife.data.local.habit.HabitLogEntity>())
+
     override suspend fun getLog(habitId: String, date: String) = null
 
     override suspend fun getLogsByDate(date: String) =

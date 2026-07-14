@@ -214,6 +214,14 @@
     <string name="profile_settings">Configurações</string>
     <string name="profile_settings_hint">Tema, dados, privacidade e notificações.</string>
 
+    <!-- Exportação de dados (backup JSON) -->
+    <string name="data_export_title">Seus dados</string>
+    <string name="data_export_hint">Exporte tudo em um arquivo JSON</string>
+    <string name="data_export_button">Exportar dados</string>
+    <string name="data_export_success">Dados exportados com sucesso</string>
+    <string name="data_export_error">Não foi possível exportar</string>
+    <string name="data_export_filename">resetlife-backup</string>
+
     <!-- Aparência / tema -->
     <string name="theme_settings_title">Aparência</string>
     <string name="theme_settings_hint">Escolha o tema do app.</string>

@@ -46,6 +46,8 @@ import br.com.resetlife.presentation.customlist.CustomListsScreen
 import br.com.resetlife.presentation.customlist.CustomListsViewModel
 import br.com.resetlife.presentation.customlist.CustomListsViewModelFactory
 import br.com.resetlife.presentation.life.LifeScreen
+import br.com.resetlife.presentation.profile.DataExportViewModel
+import br.com.resetlife.presentation.profile.DataExportViewModelFactory
 import br.com.resetlife.presentation.profile.ProfileScreen
 
 @Composable
@@ -108,6 +110,9 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     )
     val customListsViewModel: CustomListsViewModel = viewModel(
         factory = CustomListsViewModelFactory(application.environmentStore),
+    )
+    val dataExportViewModel: DataExportViewModel = viewModel(
+        factory = DataExportViewModelFactory(application),
     )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
@@ -185,6 +190,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 modifier = Modifier.padding(innerPadding),
                 themeManager = application.themeManager,
                 onNavigate = { destination -> selectedKey = destination.key },
+                dataExportViewModel = dataExportViewModel,
             )
 
             ResetLifeDestination.Onboarding -> OnboardingScreen(

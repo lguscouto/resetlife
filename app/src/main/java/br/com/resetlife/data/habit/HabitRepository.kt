@@ -68,6 +68,9 @@ open class HabitRepository(private val dao: HabitDao) {
     fun observeAllLogsForDate(date: String): Flow<List<HabitLog>> =
         dao.observeLogsByDate(date).map { list -> list.map { it.toDomain() } }
 
+    fun observeAllLogs(): Flow<List<HabitLog>> =
+        dao.observeAllLogs().map { list -> list.map { it.toDomain() } }
+
     suspend fun getLog(habitId: String, date: String): HabitLog? =
         dao.getLog(habitId, date)?.toDomain()
 

@@ -27,6 +27,8 @@ class FakeEnvironmentRepository : EnvironmentRepository(
         override suspend fun deleteCustomList(id: String) {}
         override fun observeCustomListItems(listId: String): Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> =
             flowOf(emptyList())
+        override fun observeAllCustomListItems(): Flow<List<br.com.resetlife.data.local.environment.CustomListItemEntity>> =
+            flowOf(emptyList())
         override suspend fun insertCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
         override suspend fun updateCustomListItem(entity: br.com.resetlife.data.local.environment.CustomListItemEntity) {}
         override suspend fun deleteCustomListItem(itemId: String) {}

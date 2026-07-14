@@ -16,8 +16,8 @@ android {
         applicationId = "br.com.resetlife"
         minSdk = 29
         targetSdk = 35
-        versionCode = 30
-        versionName = "0.16.0"
+        versionCode = 31
+        versionName = "0.17.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,6 +61,8 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    // Implementação real de org.json para testes unitários (o Android usa a versão do runtime).
+    testImplementation("org.json:json:20231013")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")

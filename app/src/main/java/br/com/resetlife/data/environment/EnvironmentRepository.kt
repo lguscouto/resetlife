@@ -85,6 +85,9 @@ open class EnvironmentRepository(private val dao: EnvironmentDao) {
     fun observeCustomListItems(listId: String): Flow<List<CustomListItem>> =
         dao.observeCustomListItems(listId).map { list -> list.map { it.toDomain() } }
 
+    fun observeAllCustomListItems(): Flow<List<CustomListItem>> =
+        dao.observeAllCustomListItems().map { list -> list.map { it.toDomain() } }
+
     suspend fun addCustomListItem(listId: String, title: String): String {
         val id = UUID.randomUUID().toString()
         dao.insertCustomListItem(
