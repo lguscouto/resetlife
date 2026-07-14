@@ -140,7 +140,11 @@ fun ResetLifeApp(application: ResetLifeApplication) {
         if (habitDetailId != null) {
             val detailViewModel: HabitDetailViewModel = viewModel(
                 key = "habit_detail_$habitDetailId",
-                factory = HabitDetailViewModelFactory(habitDetailId, application.habitStore),
+                factory = HabitDetailViewModelFactory(
+                    habitDetailId,
+                    application.habitStore,
+                    application.pressurePreferences,
+                ),
             )
             val detailState by detailViewModel.uiState.collectAsState()
             HabitDetailScreen(
@@ -150,6 +154,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onToggleToday = habitViewModel::toggleToday,
                 onPause = habitViewModel::pause,
                 onResume = habitViewModel::resume,
+                onRelaxedModeChanged = detailViewModel::setRelaxedMode,
             )
         } else when (selectedDestination) {
             ResetLifeDestination.Today -> TodayScreen(

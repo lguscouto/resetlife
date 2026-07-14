@@ -207,6 +207,11 @@
     <string name="habit_detail_subtitle">Acompanhe sua consistência ao longo dos dias.</string>
     <string name="habit_streak_label">Sequência</string>
     <string name="habit_streak_value">%1$d dias</string>
+    <string name="relaxed_mode_title">Modo sem pressão</string>
+    <string name="relaxed_mode_hint">Oculte a sequência e vá no seu ritmo</string>
+    <string name="relaxed_mode_message">Cada dia conta. Vá no seu ritmo.</string>
+    <string name="relaxed_mode_on">Ativado</string>
+    <string name="relaxed_mode_off">Desativado</string>
     <string name="habit_completion_rate">Conclusão</string>
     <string name="habit_completion_value">%1$d%%</string>
     <string name="habit_calendar_title">Últimos 35 dias</string>

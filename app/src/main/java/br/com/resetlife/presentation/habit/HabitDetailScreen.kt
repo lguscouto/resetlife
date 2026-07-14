@@ -12,11 +12,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import br.com.resetlife.R
 import br.com.resetlife.domain.habit.HabitType
 import br.com.resetlife.presentation.components.ResetLifeMessage
@@ -34,6 +37,7 @@ fun HabitDetailScreen(
     onToggleToday: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onPause: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onResume: (br.com.resetlife.domain.habit.Habit) -> Unit,
+    onRelaxedModeChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -82,11 +86,43 @@ fun HabitDetailScreen(
                 }
             }
 
-            OutlinedButton(
-                onClick = onBack,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.back))
+            // Modo "sem pressão": oculta a contagem de sequência e mostra uma mensagem gentil.
+            val relaxedDescription = if (state.relaxedMode) {
+                stringResource(R.string.relaxed_mode_on)
+            } else {
+                stringResource(R.string.relaxed_mode_off)
+            }
+            ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(ResetLifeSpacing.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.md),
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.xs),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.relaxed_mode_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = stringResource(R.string.relaxed_mode_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = state.relaxedMode,
+                        onCheckedChange = onRelaxedModeChanged,
+                        modifier = Modifier.semantics {
+                            contentDescription = relaxedDescription
+                        },
+                    )
+                }
             }
 
             if (state.logs.isEmpty()) {
@@ -95,54 +131,70 @@ fun HabitDetailScreen(
                     tone = ResetLifeMessageTone.Info,
                 )
             } else {
-                ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(ResetLifeSpacing.md),
-                        verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.sm),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
+                if (state.relaxedMode) {
+                    // Sem pressão: mensagem gentil no lugar da contagem de sequência.
+                    ResetLifeMessage(
+                        text = stringResource(R.string.relaxed_mode_message),
+                        tone = ResetLifeMessageTone.Info,
+                    )
+                } else {
+                    ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(ResetLifeSpacing.md),
+                            verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.sm),
                         ) {
-                            Text(
-                                text = stringResource(R.string.habit_streak_label),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text = stringResource(R.string.habit_streak_value, state.streakCurrent),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
-                        val percent = (state.completionRate * 100).toInt()
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.habit_completion_rate),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text = stringResource(R.string.habit_completion_value, percent),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.habit_streak_label),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = stringResource(R.string.habit_streak_value, state.streakCurrent),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                            val percent = (state.completionRate * 100).toInt()
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.habit_completion_rate),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = stringResource(R.string.habit_completion_value, percent),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
                         }
                     }
                 }
 
+                // O calendário é informação (não pressão) e permanece visível em ambos os modos.
                 ResetLifeSectionHeader(title = stringResource(R.string.habit_calendar_title))
                 StreakCalendar(
                     doneDates = state.logs.filter { it.done }.map { it.date }.toSet(),
                     accentColor = state.habit?.colorHex?.let { parseHabitColor(it) },
                 )
+            }
+
+            OutlinedButton(
+                onClick = onBack,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = stringResource(R.string.back))
             }
 
             state.habit?.let { habit ->

@@ -12,6 +12,8 @@ import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.data.environment.EnvironmentRepository
 import br.com.resetlife.presentation.theme.DataStoreThemePreferenceStorage
 import br.com.resetlife.presentation.theme.DataStoreReminderPreferences
+import br.com.resetlife.presentation.theme.DataStorePressurePreferences
+import br.com.resetlife.presentation.theme.PressurePreferences
 import br.com.resetlife.presentation.theme.ReminderPreferences
 import br.com.resetlife.presentation.theme.ThemeManager
 
@@ -56,5 +58,9 @@ class ResetLifeApplication : Application() {
 
     val reminderPreferences: ReminderPreferences by lazy {
         DataStoreReminderPreferences(this)
+    }
+
+    val pressurePreferences: PressurePreferences by lazy {
+        DataStorePressurePreferences(this)
     }
 }

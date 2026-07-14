@@ -6,6 +6,7 @@ import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.domain.habit.Habit
 import br.com.resetlife.domain.habit.HabitGoalType
 import br.com.resetlife.domain.habit.HabitLog
+import br.com.resetlife.presentation.theme.PressurePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,12 +18,14 @@ data class HabitDetailUiState(
     val logs: List<HabitLog> = emptyList(),
     val streakCurrent: Int = 0,
     val completionRate: Float = 0f,
+    val relaxedMode: Boolean = false,
     val isLoading: Boolean = true,
 )
 
 class HabitDetailViewModel(
     private val habitId: String,
     private val repository: HabitRepository,
+    private val pressurePreferences: PressurePreferences? = null,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HabitDetailUiState())
@@ -41,6 +44,20 @@ class HabitDetailViewModel(
                     isLoading = false,
                 )
             }
+        }
+        pressurePreferences?.let { prefs ->
+            viewModelScope.launch {
+                prefs.relaxedMode.collect { relaxed ->
+                    _uiState.value = _uiState.value.copy(relaxedMode = relaxed)
+                }
+            }
+        }
+    }
+
+    fun setRelaxedMode(enabled: Boolean) {
+        val prefs = pressurePreferences ?: return
+        viewModelScope.launch {
+            prefs.setRelaxedMode(enabled)
         }
     }
 
