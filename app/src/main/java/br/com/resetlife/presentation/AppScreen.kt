@@ -36,6 +36,9 @@ import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModelFactory
 import br.com.resetlife.presentation.habit.HabitScreen
 import br.com.resetlife.presentation.habit.HabitViewModel
 import br.com.resetlife.presentation.habit.HabitViewModelFactory
+import br.com.resetlife.presentation.environment.EnvironmentScreen
+import br.com.resetlife.presentation.environment.EnvironmentViewModel
+import br.com.resetlife.presentation.environment.EnvironmentViewModelFactory
 import br.com.resetlife.presentation.life.LifeScreen
 import br.com.resetlife.presentation.profile.ProfileScreen
 
@@ -93,12 +96,16 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val habitViewModel: HabitViewModel = viewModel(
         factory = HabitViewModelFactory(application.habitStore),
     )
+    val environmentViewModel: EnvironmentViewModel = viewModel(
+        factory = EnvironmentViewModelFactory(application.environmentStore),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
     val checkInState by checkInViewModel.uiState.collectAsState()
     val weeklyReviewState by weeklyReviewViewModel.uiState.collectAsState()
     val habitState by habitViewModel.uiState.collectAsState()
+    val environmentState by environmentViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -190,6 +197,23 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onShowAddDialog = habitViewModel::showAddDialog,
                 onHideAddDialog = habitViewModel::hideAddDialog,
                 onAddHabit = habitViewModel::addHabit,
+            )
+
+            ResetLifeDestination.Environment -> EnvironmentScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = environmentState,
+                onSelectSpace = environmentViewModel::selectSpace,
+                onShowAddSpaceDialog = environmentViewModel::showAddSpaceDialog,
+                onHideAddSpaceDialog = environmentViewModel::hideAddSpaceDialog,
+                onNewSpaceNameChanged = environmentViewModel::onNewSpaceNameChanged,
+                onAddSpace = environmentViewModel::addSpace,
+                onShowAddTaskDialog = environmentViewModel::showAddTaskDialog,
+                onHideAddTaskDialog = environmentViewModel::hideAddTaskDialog,
+                onNewTaskTitleChanged = environmentViewModel::onNewTaskTitleChanged,
+                onNewTaskMinutesChanged = environmentViewModel::onNewTaskMinutesChanged,
+                onAddToDiscardListChanged = environmentViewModel::onAddToDiscardListChanged,
+                onAddTask = environmentViewModel::addTask,
+                onToggleTask = environmentViewModel::toggleTask,
             )
         }
     }

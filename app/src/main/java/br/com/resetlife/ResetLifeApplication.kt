@@ -9,6 +9,7 @@ import br.com.resetlife.data.onboarding.UserProfileRepository
 import br.com.resetlife.data.wellbeing.WellbeingRepository
 import br.com.resetlife.data.weeklyreview.WeeklyReviewRepository
 import br.com.resetlife.data.habit.HabitRepository
+import br.com.resetlife.data.environment.EnvironmentRepository
 
 class ResetLifeApplication : Application() {
     private val database by lazy {
@@ -39,5 +40,9 @@ class ResetLifeApplication : Application() {
 
     val habitStore by lazy {
         HabitRepository(database.habitDao())
+    }
+
+    val environmentStore by lazy {
+        EnvironmentRepository(database.environmentDao())
     }
 }

@@ -48,6 +48,14 @@ enum class ResetLifeDestination(
         isBottomTab = false,
         parentTab = Life,
     ),
+    Environment(
+        key = "environment",
+        labelRes = R.string.environment_nav,
+        contentDescriptionRes = R.string.environment_nav_description,
+        symbol = "⌂",
+        isBottomTab = false,
+        parentTab = Life,
+    ),
     Wellbeing(
         key = "wellbeing",
         labelRes = R.string.wellbeing_nav,

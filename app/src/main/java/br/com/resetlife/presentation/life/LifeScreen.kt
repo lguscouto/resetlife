@@ -42,6 +42,12 @@ fun LifeScreen(
             onClick = { onNavigate(ResetLifeDestination.Habits) },
         )
         AccessCard(
+            title = stringResource(R.string.environment_nav),
+            description = stringResource(R.string.life_environment_hint),
+            symbol = "⌂",
+            onClick = { onNavigate(ResetLifeDestination.Environment) },
+        )
+        AccessCard(
             title = stringResource(R.string.wellbeing_nav),
             description = stringResource(R.string.life_wellbeing_hint),
             symbol = "❤",

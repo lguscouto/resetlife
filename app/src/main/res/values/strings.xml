@@ -190,4 +190,25 @@
     <string name="profile_review_hint">Feche a semana e planeje a próxima.</string>
     <string name="profile_settings">Configurações</string>
     <string name="profile_settings_hint">Tema, dados, privacidade e notificações.</string>
+
+    <!-- Environment -->
+    <string name="environment_nav">Ambiente</string>
+    <string name="environment_nav_description">Organizar a casa por espaços</string>
+    <string name="life_environment_hint">Checklists de quarto, cozinha, banheiro e descarte.</string>
+    <string name="environment_title">Ambiente</string>
+    <string name="environment_subtitle">Reduza a desordem física com microações.</string>
+    <string name="environment_add_space">Novo espaço</string>
+    <string name="environment_space_name">Nome do espaço</string>
+    <string name="environment_add_task">Nova tarefa</string>
+    <string name="environment_task_title">Título da tarefa</string>
+    <string name="environment_duration">Duração</string>
+    <string name="environment_minutes">%d min</string>
+    <string name="environment_add_to_discard">Adicionar à lista de descarte/doação</string>
+    <string name="environment_tasks">Tarefas</string>
+    <string name="environment_empty">Nenhuma tarefa ainda. Adicione uma microação.</string>
+    <string name="environment_last_organized">Organizado em %s</string>
+    <string name="environment_discard_title">Descarte e doação</string>
+    <string name="environment_discard_subtitle">O que pode sair de casa.</string>
+    <string name="environment_discard_empty">Nada na lista de descarte ainda.</string>
+    <string name="save">Salvar</string>
 </resources>

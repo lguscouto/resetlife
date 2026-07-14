@@ -15,6 +15,7 @@ class ResetLifeDestinationTest {
                 ResetLifeDestination.Life,
                 ResetLifeDestination.Profile,
                 ResetLifeDestination.Habits,
+                ResetLifeDestination.Environment,
                 ResetLifeDestination.Wellbeing,
                 ResetLifeDestination.WeeklyReview,
                 ResetLifeDestination.Onboarding,
