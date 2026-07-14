@@ -207,6 +207,13 @@
     <string name="profile_settings">Configurações</string>
     <string name="profile_settings_hint">Tema, dados, privacidade e notificações.</string>
 
+    <!-- Aparência / tema -->
+    <string name="theme_settings_title">Aparência</string>
+    <string name="theme_settings_hint">Escolha o tema do app.</string>
+    <string name="theme_mode_light">Claro</string>
+    <string name="theme_mode_dark">Escuro</string>
+    <string name="theme_mode_system">Sistema</string>
+
     <!-- Environment -->
     <string name="environment_nav">Ambiente</string>
     <string name="environment_nav_description">Organizar a casa por espaços</string>

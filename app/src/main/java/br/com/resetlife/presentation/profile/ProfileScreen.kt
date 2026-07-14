@@ -12,27 +12,52 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import br.com.resetlife.R
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
+import br.com.resetlife.presentation.theme.ThemeManager
+import br.com.resetlife.presentation.theme.ThemeMode
 
 @Composable
 fun ProfileScreen(
+    themeManager: ThemeManager,
     onNavigate: (ResetLifeDestination) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val currentThemeMode by themeManager.themeMode.collectAsStateWithLifecycle(ThemeMode.SYSTEM)
+    var showThemeSheet by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    if (showThemeSheet) {
+        ThemeSettingsBottomSheet(
+            current = currentThemeMode,
+            onSelect = { mode ->
+                scope.launch { themeManager.setThemeMode(mode) }
+                showThemeSheet = false
+            },
+            onDismiss = { showThemeSheet = false },
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -51,10 +76,10 @@ fun ProfileScreen(
             onClick = { onNavigate(ResetLifeDestination.WeeklyReview) },
         )
         AccessCard(
-            title = stringResource(R.string.profile_settings),
+            title = stringResource(R.string.theme_settings_title),
             description = stringResource(R.string.profile_settings_hint),
-            icon = Icons.Filled.Settings,
-            onClick = { /* Configurações ainda não implementadas */ },
+            icon = Icons.Filled.Palette,
+            onClick = { showThemeSheet = true },
         )
     }
 }

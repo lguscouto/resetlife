@@ -10,6 +10,8 @@ import br.com.resetlife.data.wellbeing.WellbeingRepository
 import br.com.resetlife.data.weeklyreview.WeeklyReviewRepository
 import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.data.environment.EnvironmentRepository
+import br.com.resetlife.presentation.theme.DataStoreThemePreferenceStorage
+import br.com.resetlife.presentation.theme.ThemeManager
 
 class ResetLifeApplication : Application() {
     private val database by lazy {
@@ -44,5 +46,9 @@ class ResetLifeApplication : Application() {
 
     val environmentStore by lazy {
         EnvironmentRepository(database.environmentDao())
+    }
+
+    val themeManager by lazy {
+        ThemeManager(DataStoreThemePreferenceStorage(this))
     }
 }

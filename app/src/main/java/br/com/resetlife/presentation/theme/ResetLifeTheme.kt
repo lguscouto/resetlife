@@ -81,8 +81,15 @@ val LocalResetLifeColors = staticCompositionLocalOf {
 }
 
 @Composable
-fun ResetLifeTheme(content: @Composable () -> Unit) {
-    val dark = isSystemInDarkTheme()
+fun ResetLifeTheme(
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    content: @Composable () -> Unit,
+) {
+    val dark = when (themeMode) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
     val semanticColors = if (dark) {
         ResetLifeSemanticColors(
             focus = Color(0xFF9DCBFF),

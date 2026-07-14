@@ -183,6 +183,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
 
             ResetLifeDestination.Profile -> ProfileScreen(
                 modifier = Modifier.padding(innerPadding),
+                themeManager = application.themeManager,
                 onNavigate = { destination -> selectedKey = destination.key },
             )
 
