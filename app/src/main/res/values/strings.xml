@@ -114,4 +114,24 @@
     <string name="plan_14_days">14 dias</string>
     <string name="plan_30_days">30 dias</string>
     <string name="start_reset">Começar</string>
+
+    <!-- Wellbeing Check-in -->
+    <string name="onboarding_nav">Onboarding</string>
+    <string name="onboarding_nav_desc">Concluir onboarding</string>
+    <string name="wellbeing_nav">Bem-estar</string>
+    <string name="wellbeing_nav_description">Check-in de bem-estar</string>
+    <string name="wellbeing_title">Check-in do dia</string>
+    <string name="wellbeing_subtitle">Como você está hoje?</string>
+    <string name="mood_label">Humor</string>
+    <string name="energy_label">Energia</string>
+    <string name="stress_label">Estresse</string>
+    <string name="sleep_label">Sono percebido</string>
+    <string name="note_label">Nota (opcional)</string>
+    <string name="save_checkin">Salvar check-in</string>
+    <string name="checkin_saved">Check-in salvo.</string>
+    <string name="mood_very_low">Muito baixo</string>
+    <string name="mood_low">Baixo</string>
+    <string name="mood_neutral">Neutro</string>
+    <string name="mood_high">Alto</string>
+    <string name="mood_very_high">Muito alto</string>
 </resources>

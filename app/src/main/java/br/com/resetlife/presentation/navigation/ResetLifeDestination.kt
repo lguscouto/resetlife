@@ -23,8 +23,14 @@ enum class ResetLifeDestination(
     ),
     Onboarding(
         key = "onboarding",
-        labelRes = R.string.today_nav, // temp
-        contentDescriptionRes = R.string.today_nav_description, // temp
+        labelRes = R.string.onboarding_nav,
+        contentDescriptionRes = R.string.onboarding_nav_desc,
         symbol = "👤",
+    ),
+    Wellbeing(
+        key = "wellbeing",
+        labelRes = R.string.wellbeing_nav,
+        contentDescriptionRes = R.string.wellbeing_nav_description,
+        symbol = "☀",
     ),
 }

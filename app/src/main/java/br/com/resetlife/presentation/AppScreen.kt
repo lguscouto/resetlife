@@ -25,6 +25,7 @@ import br.com.resetlife.presentation.organize.OrganizeViewModelFactory
 import br.com.resetlife.presentation.today.TodayScreen
 import br.com.resetlife.presentation.today.TodayViewModel
 import br.com.resetlife.presentation.today.TodayViewModelFactory
+import br.com.resetlife.presentation.wellbeing.CheckInScreen
 import br.com.resetlife.presentation.wellbeing.CheckInViewModel
 import br.com.resetlife.presentation.wellbeing.CheckInViewModelFactory
 
@@ -56,9 +57,13 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val organizeViewModel: OrganizeViewModel = viewModel(
         factory = OrganizeViewModelFactory(application.organizeStore, application.priorityStore),
     )
+    val checkInViewModel: CheckInViewModel = viewModel(
+        factory = CheckInViewModelFactory(application.wellbeingStore),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
+    val checkInState by checkInViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -106,6 +111,17 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onMinutesSelected = onboardingViewModel::setAvailableMinutes,
                 selectedDuration = onboardingState.planDurationDays,
                 onDurationSelected = onboardingViewModel::setPlanDuration,
+            )
+
+            ResetLifeDestination.Wellbeing -> CheckInScreen(
+                modifier = Modifier.padding(innerPadding),
+                uiState = checkInState,
+                onMoodChanged = checkInViewModel::setMood,
+                onEnergyChanged = checkInViewModel::setEnergy,
+                onStressChanged = checkInViewModel::setStress,
+                onSleepChanged = checkInViewModel::setSleep,
+                onNoteChanged = checkInViewModel::setNote,
+                onSave = checkInViewModel::save,
             )
         }
     }
