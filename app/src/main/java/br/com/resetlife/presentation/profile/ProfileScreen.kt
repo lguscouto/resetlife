@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material3.Button
@@ -35,25 +36,33 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import br.com.resetlife.R
+import br.com.resetlife.data.reminder.ReminderScheduler
 import br.com.resetlife.presentation.components.ResetLifeMessage
 import br.com.resetlife.presentation.components.ResetLifeMessageTone
 import br.com.resetlife.presentation.components.ResetLifeSectionHeader
 import br.com.resetlife.presentation.components.ResetLifeSurface
 import br.com.resetlife.presentation.navigation.ResetLifeDestination
 import br.com.resetlife.presentation.theme.ResetLifeSpacing
+import br.com.resetlife.presentation.theme.ReminderPreferences
 import br.com.resetlife.presentation.theme.ThemeManager
 import br.com.resetlife.presentation.theme.ThemeMode
 
 @Composable
 fun ProfileScreen(
     themeManager: ThemeManager,
+    reminderPreferences: ReminderPreferences,
     onNavigate: (ResetLifeDestination) -> Unit,
     dataExportViewModel: DataExportViewModel,
     modifier: Modifier = Modifier,
 ) {
     val currentThemeMode by themeManager.themeMode.collectAsStateWithLifecycle(ThemeMode.SYSTEM)
     val exportState by dataExportViewModel.uiState.collectAsStateWithLifecycle()
+    val reminderEnabled by reminderPreferences.enabled.collectAsStateWithLifecycle(false)
+    val reminderHour by reminderPreferences.hour.collectAsStateWithLifecycle(20)
+    val reminderMinute by reminderPreferences.minute.collectAsStateWithLifecycle(0)
     var showThemeSheet by remember { mutableStateOf(false) }
+    var showReminderSheet by remember { mutableStateOf(false) }
+    var reminderScheduled by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -74,6 +83,37 @@ fun ProfileScreen(
                 showThemeSheet = false
             },
             onDismiss = { showThemeSheet = false },
+        )
+    }
+
+    if (showReminderSheet) {
+        ReminderSettingsBottomSheet(
+            enabled = reminderEnabled,
+            hour = reminderHour,
+            minute = reminderMinute,
+            onEnabledChange = { enabled ->
+                scope.launch {
+                    reminderPreferences.setEnabled(enabled)
+                    if (enabled) {
+                        ReminderScheduler.schedule(context, reminderHour, reminderMinute)
+                        reminderScheduled = true
+                    } else {
+                        ReminderScheduler.cancel(context)
+                        reminderScheduled = false
+                    }
+                }
+                if (!enabled) showReminderSheet = false
+            },
+            onTimeChange = { h, m ->
+                scope.launch {
+                    reminderPreferences.setTime(h, m)
+                    if (reminderEnabled) {
+                        ReminderScheduler.schedule(context, h, m)
+                        reminderScheduled = true
+                    }
+                }
+            },
+            onDismiss = { showReminderSheet = false },
         )
     }
 
@@ -100,6 +140,16 @@ fun ProfileScreen(
             icon = Icons.Filled.Palette,
             onClick = { showThemeSheet = true },
         )
+        AccessCard(
+            title = stringResource(R.string.reminder_title),
+            description = if (reminderEnabled) {
+                stringResource(R.string.reminder_hint)
+            } else {
+                stringResource(R.string.reminder_disabled_hint)
+            },
+            icon = Icons.Filled.Notifications,
+            onClick = { showReminderSheet = true },
+        )
         val exportFilename = stringResource(R.string.data_export_filename)
         DataCard(
             title = stringResource(R.string.data_export_title),
@@ -118,6 +168,12 @@ fun ProfileScreen(
                 tone = ResetLifeMessageTone.Error,
             )
             else -> Unit
+        }
+        if (reminderScheduled) {
+            ResetLifeMessage(
+                text = stringResource(R.string.reminder_scheduled),
+                tone = ResetLifeMessageTone.Success,
+            )
         }
     }
 }

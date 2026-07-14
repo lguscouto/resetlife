@@ -16,8 +16,8 @@ android {
         applicationId = "br.com.resetlife"
         minSdk = 29
         targetSdk = 35
-        versionCode = 31
-        versionName = "0.17.0"
+        versionCode = 32
+        versionName = "0.18.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,6 +68,9 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Permissões em Compose (POST_NOTIFICATIONS)
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
 
     // Jetpack Glance — widgets da tela inicial (Hoje / Hábitos)
     implementation("androidx.glance:glance-appwidget:1.1.0")

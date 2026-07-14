@@ -11,6 +11,8 @@ import br.com.resetlife.data.weeklyreview.WeeklyReviewRepository
 import br.com.resetlife.data.habit.HabitRepository
 import br.com.resetlife.data.environment.EnvironmentRepository
 import br.com.resetlife.presentation.theme.DataStoreThemePreferenceStorage
+import br.com.resetlife.presentation.theme.DataStoreReminderPreferences
+import br.com.resetlife.presentation.theme.ReminderPreferences
 import br.com.resetlife.presentation.theme.ThemeManager
 
 class ResetLifeApplication : Application() {
@@ -50,5 +52,9 @@ class ResetLifeApplication : Application() {
 
     val themeManager by lazy {
         ThemeManager(DataStoreThemePreferenceStorage(this))
+    }
+
+    val reminderPreferences: ReminderPreferences by lazy {
+        DataStoreReminderPreferences(this)
     }
 }

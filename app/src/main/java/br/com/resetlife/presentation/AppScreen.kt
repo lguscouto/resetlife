@@ -189,6 +189,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
             ResetLifeDestination.Profile -> ProfileScreen(
                 modifier = Modifier.padding(innerPadding),
                 themeManager = application.themeManager,
+                reminderPreferences = application.reminderPreferences,
                 onNavigate = { destination -> selectedKey = destination.key },
                 dataExportViewModel = dataExportViewModel,
             )

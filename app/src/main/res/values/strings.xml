@@ -278,4 +278,16 @@
     <!-- Reward messages (textos rotativos ficam em RewardProvider) -->
     <string name="reward_section">Pronto!</string>
     <string name="reward_all_done_a11y">Todas as prioridades de hoje concluídas</string>
+
+    <!-- Lembretes locais (notificações) -->
+    <string name="reminder_title">Lembretes</string>
+    <string name="reminder_hint">Receba um aviso para revisar o dia</string>
+    <string name="reminder_disabled_hint">Desativado</string>
+    <string name="reminder_enabled">Ativado</string>
+    <string name="reminder_time">Horário</string>
+    <string name="reminder_permission_rationale">Precisamos de permissão para enviar o lembrete</string>
+    <string name="reminder_channel_name">Lembretes ResetLife</string>
+    <string name="reminder_notification_title">ResetLife</string>
+    <string name="reminder_notification_message">Que tal revisar seus hábitos de hoje?</string>
+    <string name="reminder_scheduled">Lembrete agendado</string>
 </resources>
