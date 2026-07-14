@@ -2,7 +2,9 @@
 
 Aplicativo Android **offline-first** para ajudar pessoas a reorganizarem a vida por meio de planos de reset, prioridades diárias, hábitos, bem-estar, finanças essenciais e revisão semanal.
 
-A build `0.3.9` é o release candidate UX/UI final, com todos os portões atendidos:
+A build `0.4.0-rc1` entrega o onboarding completo:
+- stepper com área prioritária, disponibilidade diária e duração do plano;
+- persistência via UserProfileEntity;
 - tema escuro funcional em todas as telas;
 - suporte a fonte grande (1.5x) sem overflow;
 - insets corretas (barra de navegação, StatusBar);
@@ -11,7 +13,8 @@ A build `0.3.9` é o release candidate UX/UI final, com todos os portões atendi
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.3.9` (`versionCode = 12`);
+| - versão atual: `0.4.0-rc1` (`versionCode = 14`);
+| - Onboarding stepper (área → disponibilidade → duração) implementado;
 - suporte mínimo: Android 10 (API 29);
 - tela **Organizar** com formulários recolhíveis para criar projeto e tarefa;
 - tarefa priorizada como ação inicial e projeto separado visualmente;
@@ -124,6 +127,7 @@ A validação realizada na versão `0.3.9` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.7](docs/releases/0.3.7.md)
 - [Notas de release 0.3.8](docs/releases/0.3.8.md)
 - [Notas de release 0.3.9](docs/releases/0.3.9.md)
+- [Notas de release 0.4.0-rc1](docs/releases/0.4.0-rc1.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto
