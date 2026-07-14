@@ -1,5 +1,6 @@
 package br.com.resetlife.presentation.today
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,9 +15,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -52,6 +56,8 @@ fun TodayScreen(
     onPriorityInputChanged: (String) -> Unit,
     onAddPriority: () -> Unit,
     onCompletePriority: (String) -> Unit,
+    onCompleteEnvironmentSuggestion: () -> Unit,
+    onOpenEnvironment: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -80,6 +86,47 @@ fun TodayScreen(
                 title = stringResource(R.string.today_title),
                 supportingText = stringResource(R.string.today_subtitle),
             )
+
+            uiState.environmentSuggestion?.let { task ->
+                ResetLifeSurface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenEnvironment),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(ResetLifeSpacing.md),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(ResetLifeSpacing.md),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Eco,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp),
+                        )
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = ResetLifeSpacing.sm),
+                            verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.xs),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.today_env_suggestion),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                text = task.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                        Button(onClick = onCompleteEnvironmentSuggestion) {
+                            Text(stringResource(R.string.done))
+                        }
+                    }
+                }
+            }
 
             ResetLifeSurface(
                 modifier = Modifier.fillMaxWidth(),
@@ -320,6 +367,8 @@ private fun TodayScreenPreview() {
             onPriorityInputChanged = {},
             onAddPriority = {},
             onCompletePriority = {},
+            onCompleteEnvironmentSuggestion = {},
+            onOpenEnvironment = {},
             onRetry = {},
         )
     }

@@ -2,6 +2,7 @@ package br.com.resetlife.presentation.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Eco
@@ -64,6 +65,14 @@ enum class ResetLifeDestination(
         labelRes = R.string.environment_nav,
         contentDescriptionRes = R.string.environment_nav_description,
         icon = Icons.Filled.Eco,
+        isBottomTab = false,
+        parentTab = Life,
+    ),
+    CustomLists(
+        key = "custom_lists",
+        labelRes = R.string.custom_lists_nav,
+        contentDescriptionRes = R.string.custom_lists_nav_description,
+        icon = Icons.Filled.List,
         isBottomTab = false,
         parentTab = Life,
     ),

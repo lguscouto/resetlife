@@ -39,6 +39,9 @@ import br.com.resetlife.presentation.habit.HabitViewModelFactory
 import br.com.resetlife.presentation.environment.EnvironmentScreen
 import br.com.resetlife.presentation.environment.EnvironmentViewModel
 import br.com.resetlife.presentation.environment.EnvironmentViewModelFactory
+import br.com.resetlife.presentation.customlist.CustomListsScreen
+import br.com.resetlife.presentation.customlist.CustomListsViewModel
+import br.com.resetlife.presentation.customlist.CustomListsViewModelFactory
 import br.com.resetlife.presentation.life.LifeScreen
 import br.com.resetlife.presentation.profile.ProfileScreen
 
@@ -78,7 +81,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     }
 
     val todayViewModel: TodayViewModel = viewModel(
-        factory = TodayViewModelFactory(application.priorityStore),
+        factory = TodayViewModelFactory(application.priorityStore, application.environmentStore),
     )
     val organizeViewModel: OrganizeViewModel = viewModel(
         factory = OrganizeViewModelFactory(application.organizeStore, application.priorityStore),
@@ -99,6 +102,9 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val environmentViewModel: EnvironmentViewModel = viewModel(
         factory = EnvironmentViewModelFactory(application.environmentStore),
     )
+    val customListsViewModel: CustomListsViewModel = viewModel(
+        factory = CustomListsViewModelFactory(application.environmentStore),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
@@ -106,6 +112,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     val weeklyReviewState by weeklyReviewViewModel.uiState.collectAsState()
     val habitState by habitViewModel.uiState.collectAsState()
     val environmentState by environmentViewModel.uiState.collectAsState()
+    val customListsState by customListsViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -123,6 +130,8 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onPriorityInputChanged = todayViewModel::onPriorityInputChanged,
                 onAddPriority = todayViewModel::addPriority,
                 onCompletePriority = todayViewModel::completePriority,
+                onCompleteEnvironmentSuggestion = todayViewModel::completeEnvironmentSuggestion,
+                onOpenEnvironment = { selectedKey = ResetLifeDestination.Environment.key },
                 onRetry = todayViewModel::retryStorageOperation,
             )
 
@@ -214,6 +223,23 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onAddToDiscardListChanged = environmentViewModel::onAddToDiscardListChanged,
                 onAddTask = environmentViewModel::addTask,
                 onToggleTask = environmentViewModel::toggleTask,
+            )
+
+            ResetLifeDestination.CustomLists -> CustomListsScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = customListsState,
+                onSelectList = customListsViewModel::selectList,
+                onShowAddListDialog = customListsViewModel::showAddListDialog,
+                onHideAddListDialog = customListsViewModel::hideAddListDialog,
+                onNewListNameChanged = customListsViewModel::onNewListNameChanged,
+                onAddList = customListsViewModel::addList,
+                onShowAddItemDialog = customListsViewModel::showAddItemDialog,
+                onHideAddItemDialog = customListsViewModel::hideAddItemDialog,
+                onNewItemTitleChanged = customListsViewModel::onNewItemTitleChanged,
+                onAddItem = customListsViewModel::addItem,
+                onToggleItem = customListsViewModel::toggleItem,
+                onDeleteItem = customListsViewModel::deleteItem,
+                onDeleteList = customListsViewModel::deleteList,
             )
         }
     }

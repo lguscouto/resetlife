@@ -2,6 +2,7 @@ package br.com.resetlife.presentation.today
 
 import br.com.resetlife.MainDispatcherRule
 import br.com.resetlife.data.today.PriorityStore
+import br.com.resetlife.presentation.today.FakeEnvironmentRepository
 import br.com.resetlife.domain.today.PriorityItem
 import java.util.Collections
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +24,7 @@ class TodayViewModelPersistenceTest {
         val store = PersistenceFakePriorityStore(
             initial = listOf(PriorityItem(id = "saved", title = "Prioridade persistida")),
         )
-        val viewModel = TodayViewModel(store)
+        val viewModel = TodayViewModel(store, FakeEnvironmentRepository())
 
         advanceUntilIdle()
 

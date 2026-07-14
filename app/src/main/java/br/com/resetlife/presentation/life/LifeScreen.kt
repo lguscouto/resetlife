@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +57,12 @@ fun LifeScreen(
             description = stringResource(R.string.life_environment_hint),
             icon = Icons.Filled.Eco,
             onClick = { onNavigate(ResetLifeDestination.Environment) },
+        )
+        AccessCard(
+            title = stringResource(R.string.custom_lists_nav),
+            description = stringResource(R.string.life_custom_lists_hint),
+            icon = Icons.Filled.List,
+            onClick = { onNavigate(ResetLifeDestination.CustomLists) },
         )
         AccessCard(
             title = stringResource(R.string.wellbeing_nav),

@@ -5,6 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import br.com.resetlife.data.local.environment.CustomListItemEntity
+import br.com.resetlife.data.local.environment.CustomListEntity
+import br.com.resetlife.data.local.environment.EnvironmentSpaceEntity
+import br.com.resetlife.data.local.environment.EnvironmentTaskEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -44,4 +48,16 @@ interface EnvironmentDao {
 
     @Query("DELETE FROM custom_list WHERE id = :id")
     suspend fun deleteCustomList(id: String)
+
+    @Query("SELECT * FROM custom_list_item WHERE listId = :listId ORDER BY title")
+    fun observeCustomListItems(listId: String): Flow<List<CustomListItemEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCustomListItem(item: CustomListItemEntity)
+
+    @Update
+    suspend fun updateCustomListItem(item: CustomListItemEntity)
+
+    @Query("DELETE FROM custom_list_item WHERE id = :id")
+    suspend fun deleteCustomListItem(id: String)
 }

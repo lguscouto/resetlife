@@ -24,3 +24,11 @@ data class CustomList(
     val id: String,
     val name: String,
 )
+
+/** Item de uma lista própria. */
+data class CustomListItem(
+    val id: String,
+    val listId: String,
+    val title: String,
+    val done: Boolean = false,
+)

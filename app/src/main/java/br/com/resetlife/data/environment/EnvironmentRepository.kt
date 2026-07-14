@@ -1,7 +1,9 @@
 package br.com.resetlife.data.environment
 
+import br.com.resetlife.data.local.environment.CustomListItemEntity
 import br.com.resetlife.data.local.environment.EnvironmentDao
 import br.com.resetlife.domain.environment.CustomList
+import br.com.resetlife.domain.environment.CustomListItem
 import br.com.resetlife.domain.environment.EnvironmentSpace
 import br.com.resetlife.domain.environment.EnvironmentTask
 import br.com.resetlife.domain.environment.toDomain
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.util.UUID
 
-class EnvironmentRepository(private val dao: EnvironmentDao) {
+open class EnvironmentRepository(private val dao: EnvironmentDao) {
 
     fun observeSpaces(): Flow<List<EnvironmentSpace>> =
         dao.observeSpaces().map { list -> list.map { it.toDomain() } }
@@ -78,5 +80,24 @@ class EnvironmentRepository(private val dao: EnvironmentDao) {
 
     suspend fun deleteCustomList(listId: String) {
         dao.deleteCustomList(listId)
+    }
+
+    fun observeCustomListItems(listId: String): Flow<List<CustomListItem>> =
+        dao.observeCustomListItems(listId).map { list -> list.map { it.toDomain() } }
+
+    suspend fun addCustomListItem(listId: String, title: String): String {
+        val id = UUID.randomUUID().toString()
+        dao.insertCustomListItem(
+            CustomListItem(id = id, listId = listId, title = title.trim()).toEntity(),
+        )
+        return id
+    }
+
+    suspend fun setCustomListItemDone(item: CustomListItem, done: Boolean) {
+        dao.updateCustomListItem(item.copy(done = done).toEntity())
+    }
+
+    suspend fun deleteCustomListItem(itemId: String) {
+        dao.deleteCustomListItem(itemId)
     }
 }

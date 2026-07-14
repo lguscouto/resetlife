@@ -2,6 +2,7 @@ package br.com.resetlife.presentation.today
 
 import br.com.resetlife.MainDispatcherRule
 import br.com.resetlife.data.today.PriorityStore
+import br.com.resetlife.presentation.today.FakeEnvironmentRepository
 import br.com.resetlife.domain.today.PriorityItem
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,7 +25,7 @@ class TodayViewModelTest {
 
     @Test
     fun `adding a valid priority clears entry and exposes it in state`() = runTest {
-        val viewModel = TodayViewModel(FakePriorityStore())
+        val viewModel = TodayViewModel(FakePriorityStore(), FakeEnvironmentRepository())
         advanceUntilIdle()
 
         viewModel.onPriorityInputChanged("Organizar documentos")
@@ -39,7 +40,7 @@ class TodayViewModelTest {
 
     @Test
     fun `exposes feedback when a fourth priority is requested`() = runTest {
-        val viewModel = TodayViewModel(FakePriorityStore())
+        val viewModel = TodayViewModel(FakePriorityStore(), FakeEnvironmentRepository())
         advanceUntilIdle()
 
         repeat(3) { index ->
@@ -56,7 +57,7 @@ class TodayViewModelTest {
     @Test
     fun `prevents duplicate priority submission while first save is pending`() = runTest {
         val saveGate = CompletableDeferred<Unit>()
-        val viewModel = TodayViewModel(FakePriorityStore(addGate = saveGate))
+        val viewModel = TodayViewModel(FakePriorityStore(addGate = saveGate), FakeEnvironmentRepository())
         advanceUntilIdle()
         viewModel.onPriorityInputChanged("Prioridade única")
 
@@ -77,7 +78,7 @@ class TodayViewModelTest {
             initial = listOf(PriorityItem(id = "priority-1", title = "Caminhar")),
             completeGate = completeGate,
         )
-        val viewModel = TodayViewModel(store)
+        val viewModel = TodayViewModel(store, FakeEnvironmentRepository())
         advanceUntilIdle()
 
         viewModel.completePriority("priority-1")
@@ -98,6 +99,7 @@ class TodayViewModelTest {
                 initial = listOf(PriorityItem(id = "priority-1", title = "Caminhar")),
                 observeFailures = 1,
             ),
+            FakeEnvironmentRepository(),
         )
         advanceUntilIdle()
 
@@ -114,7 +116,7 @@ class TodayViewModelTest {
     @Test
     fun `retries failed priority save without losing draft`() = runTest {
         val store = FakePriorityStore(addFailures = 1)
-        val viewModel = TodayViewModel(store)
+        val viewModel = TodayViewModel(store, FakeEnvironmentRepository())
         advanceUntilIdle()
         viewModel.onPriorityInputChanged("Prioridade recuperável")
 
@@ -134,7 +136,7 @@ class TodayViewModelTest {
 
     @Test
     fun `completing a priority updates its visible state`() = runTest {
-        val viewModel = TodayViewModel(FakePriorityStore())
+        val viewModel = TodayViewModel(FakePriorityStore(), FakeEnvironmentRepository())
         advanceUntilIdle()
         viewModel.onPriorityInputChanged("Caminhar 15 minutos")
         viewModel.addPriority()
@@ -148,7 +150,7 @@ class TodayViewModelTest {
     }
 }
 
-private class FakePriorityStore(
+internal class FakePriorityStore(
     initial: List<PriorityItem> = emptyList(),
     private val addGate: CompletableDeferred<Unit>? = null,
     private val completeGate: CompletableDeferred<Unit>? = null,

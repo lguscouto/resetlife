@@ -1,5 +1,6 @@
 package br.com.resetlife.domain.environment
 
+import br.com.resetlife.data.local.environment.CustomListItemEntity
 import br.com.resetlife.data.local.environment.CustomListEntity
 import br.com.resetlife.data.local.environment.EnvironmentSpaceEntity
 import br.com.resetlife.data.local.environment.EnvironmentTaskEntity
@@ -46,4 +47,18 @@ fun CustomListEntity.toDomain(): CustomList = CustomList(
 fun CustomList.toEntity(): CustomListEntity = CustomListEntity(
     id = id,
     name = name,
+)
+
+fun CustomListItemEntity.toDomain(): CustomListItem = CustomListItem(
+    id = id,
+    listId = listId,
+    title = title,
+    done = done,
+)
+
+fun CustomListItem.toEntity(): CustomListItemEntity = CustomListItemEntity(
+    id = id,
+    listId = listId,
+    title = title,
+    done = done,
 )

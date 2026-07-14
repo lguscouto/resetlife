@@ -2,7 +2,9 @@ package br.com.resetlife.presentation.today
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.resetlife.data.environment.EnvironmentRepository
 import br.com.resetlife.data.today.PriorityStore
+import br.com.resetlife.domain.environment.EnvironmentTask
 import br.com.resetlife.domain.today.AddPriorityResult
 import br.com.resetlife.domain.today.CompletionResult
 import br.com.resetlife.domain.today.DailyPriorities
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 data class TodayUiState(
@@ -22,6 +25,7 @@ data class TodayUiState(
     val loadError: Boolean = false,
     val isSavingPriority: Boolean = false,
     val pendingPriorityId: String? = null,
+    val environmentSuggestion: EnvironmentTask? = null,
 ) {
     val isPriorityActionInProgress: Boolean
         get() = pendingPriorityId != null
@@ -59,6 +63,7 @@ private sealed interface TodayRetryAction {
 
 class TodayViewModel(
     private val priorityStore: PriorityStore,
+    private val environmentRepository: EnvironmentRepository,
 ) : ViewModel() {
     private var dailyPriorities = DailyPriorities.empty()
     private var retryAction: TodayRetryAction? = null
@@ -68,6 +73,7 @@ class TodayViewModel(
 
     init {
         observePriorities()
+        observeEnvironmentSuggestion()
     }
 
     fun retryStorageOperation() {
@@ -112,6 +118,36 @@ class TodayViewModel(
                         loadError = false,
                     )
                 }
+        }
+    }
+
+    private fun observeEnvironmentSuggestion() {
+        viewModelScope.launch {
+            environmentRepository.observeSpaces()
+                .collect { spaces ->
+                    if (spaces.isEmpty()) {
+                        mutableUiState.value = mutableUiState.value.copy(environmentSuggestion = null)
+                        return@collect
+                    }
+                    val tasksBySpace = mutableMapOf<String, List<EnvironmentTask>>()
+                    spaces.forEach { space ->
+                        launch {
+                            environmentRepository.observeTasksBySpace(space.id).collect { tasks ->
+                                tasksBySpace[space.id] = tasks
+                                val all = tasksBySpace.values.flatten()
+                                val pending = all.firstOrNull { !it.done && !it.discardList }
+                                mutableUiState.value = mutableUiState.value.copy(environmentSuggestion = pending)
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    fun completeEnvironmentSuggestion() {
+        val task = uiState.value.environmentSuggestion ?: return
+        viewModelScope.launch {
+            environmentRepository.setTaskDone(task, true)
         }
     }
 
