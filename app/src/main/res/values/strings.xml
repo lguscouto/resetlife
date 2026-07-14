@@ -230,4 +230,12 @@
     <string name="custom_lists_new_item">Novo item</string>
     <string name="custom_lists_item_title">Título do item</string>
     <string name="delete">Excluir</string>
+
+    <!-- Widgets -->
+    <string name="widget_today_title">Hoje</string>
+    <string name="widget_habits_title">Hábitos</string>
+    <string name="widget_empty">Nada por aqui ainda</string>
+    <string name="widget_complete">Concluir</string>
+    <string name="widget_done_mark">Feito</string>
+    <string name="widget_habits_empty">Sem hábitos</string>
 </resources>
