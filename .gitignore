@@ -19,3 +19,4 @@ secrets.properties
 # System files
 .DS_Store
 Thumbs.db
+ui_dump.xml
