@@ -25,6 +25,8 @@ import br.com.resetlife.presentation.organize.OrganizeViewModelFactory
 import br.com.resetlife.presentation.today.TodayScreen
 import br.com.resetlife.presentation.today.TodayViewModel
 import br.com.resetlife.presentation.today.TodayViewModelFactory
+import br.com.resetlife.presentation.wellbeing.CheckInViewModel
+import br.com.resetlife.presentation.wellbeing.CheckInViewModelFactory
 
 @Composable
 fun ResetLifeApp(application: ResetLifeApplication) {
