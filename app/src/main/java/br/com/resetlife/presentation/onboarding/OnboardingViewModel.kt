@@ -27,12 +27,16 @@ class OnboardingViewModel(
         viewModelScope.launch {
             userProfileStore.observe().collect { profile ->
                 profile?.let {
-                    _uiState.value = _uiState.value.copy(
-                        onboardingCompleted = it.onboardingCompleted,
-                        selectedArea = if (it.lifeAreas.isNotEmpty()) it.lifeAreas.first() else null,
-                        availableMinutes = it.dailyAvailabilityMinutes,
-                        planDurationDays = it.resetPlanDurationDays,
-                    )
+                    // Só sincroniza estado se o onboarding já foi concluído antes.
+                    // Não sobrescreve seleções em andamento de um onboarding novo.
+                    if (it.onboardingCompleted) {
+                        _uiState.value = _uiState.value.copy(
+                            onboardingCompleted = true,
+                            selectedArea = if (it.lifeAreas.isNotEmpty()) it.lifeAreas.first() else null,
+                            availableMinutes = it.dailyAvailabilityMinutes,
+                            planDurationDays = it.resetPlanDurationDays,
+                        )
+                    }
                 }
             }
         }
@@ -43,7 +47,7 @@ class OnboardingViewModel(
     }
 
     fun setAvailableMinutes(minutes: Int) {
-        _uiState.value = _uiState.value.copy(availableMinutes = minutes, step = 2)
+        _uiState.value = _uiState.value.copy(availableMinutes = minutes)
     }
 
     fun setPlanDuration(days: Int) {

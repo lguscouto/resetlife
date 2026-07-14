@@ -58,8 +58,16 @@ fun OnboardingScreen(
             verticalArrangement = Arrangement.spacedBy(ResetLifeSpacing.lg),
         ) {
             when (step) {
-                1 -> AreaStep(selectedArea, onAreaSelected)
-                2 -> DurationStep(selectedMinutes, onMinutesSelected)
+                1 -> AreaStep(
+                    selectedArea = selectedArea,
+                    onAreaSelected = onAreaSelected,
+                    onNext = onNext,
+                )
+                2 -> DurationStep(
+                selectedMinutes = selectedMinutes,
+                onMinutesSelected = onMinutesSelected,
+                onNext = onNext,
+            )
                 3 -> PlanDurationStep(selectedDuration, onDurationSelected, onComplete = onNext)
             }
         }
@@ -70,6 +78,7 @@ fun OnboardingScreen(
 private fun AreaStep(
     selectedArea: LifeArea?,
     onAreaSelected: (LifeArea) -> Unit,
+    onNext: () -> Unit,
 ) {
     ResetLifeSectionHeader(
         title = "Quais áreas da sua vida precisam de atenção?",
@@ -102,12 +111,21 @@ private fun AreaStep(
             }
         }
     }
+
+    Button(
+        onClick = onNext,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = selectedArea != null,
+    ) {
+        Text(text = "Próximo")
+    }
 }
 
 @Composable
 private fun DurationStep(
     selectedMinutes: Int?,
     onMinutesSelected: (Int) -> Unit,
+    onNext: () -> Unit,
 ) {
     ResetLifeSectionHeader(
         title = "Quanto tempo por dia?",
@@ -122,6 +140,14 @@ private fun DurationStep(
             ) {
                 Text(text = "${minutes} minutos")
             }
+        }
+
+        Button(
+            onClick = onNext,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = selectedMinutes != null,
+        ) {
+            Text(text = "Próximo")
         }
     }
 }

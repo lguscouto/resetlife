@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,13 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     var selectedKey by rememberSaveable { mutableStateOf(startDestination.key) }
     val selectedDestination = ResetLifeDestination.entries.firstOrNull { it.key == selectedKey }
         ?: ResetLifeDestination.Today
+
+    // Após concluir o onboarding, vai para Hoje automaticamente
+    LaunchedEffect(userProfileState.onboardingCompleted) {
+        if (userProfileState.onboardingCompleted && selectedKey == ResetLifeDestination.Onboarding.key) {
+            selectedKey = ResetLifeDestination.Today.key
+        }
+    }
 
     BackHandler(enabled = selectedDestination != ResetLifeDestination.Today && selectedDestination != ResetLifeDestination.Onboarding) {
         selectedKey = ResetLifeDestination.Today.key
