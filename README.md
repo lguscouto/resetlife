@@ -13,7 +13,7 @@ A build `0.4.0-rc1` entrega o onboarding completo:
 ## Estado atual
 
 - projeto Android nativo em Kotlin + Jetpack Compose;
-- versão atual: `0.5.0` (`versionCode = 16`);
+- versão atual: `0.5.1` (`versionCode = 17`);
 - Onboarding completo (área → disponibilidade → duração) com navegação automática para Hoje;
 - Check-in de bem-estar (humor, energia, estresse, sono) com persistência Room v4;
 - suporte mínimo: Android 10 (API 29);
@@ -130,6 +130,7 @@ A validação realizada na versão `0.3.9` instalou o APK no emulador `Pixel_8`,
 - [Notas de release 0.3.9](docs/releases/0.3.9.md)
 - [Notas de release 0.4.0-rc1](docs/releases/0.4.0-rc1.md)
 - [Notas de release 0.5.0](docs/releases/0.5.0.md)
+- [Notas de release 0.5.1](docs/releases/0.5.1.md)
 - [Regras de trabalho do repositório](AGENTS.md)
 
 ## Princípios do produto
