@@ -115,12 +115,11 @@ fun ResetLifeApp(application: ResetLifeApplication) {
 
             ResetLifeDestination.Wellbeing -> CheckInScreen(
                 modifier = Modifier.padding(innerPadding),
-                uiState = checkInState,
-                onMoodChanged = checkInViewModel::setMood,
-                onEnergyChanged = checkInViewModel::setEnergy,
-                onStressChanged = checkInViewModel::setStress,
-                onSleepChanged = checkInViewModel::setSleep,
-                onNoteChanged = checkInViewModel::setNote,
+                state = checkInState,
+                onMoodSelected = checkInViewModel::setMood,
+                onEnergySelected = checkInViewModel::setEnergy,
+                onStressSelected = checkInViewModel::setStress,
+                onSleepSelected = checkInViewModel::setSleep,
                 onSave = checkInViewModel::save,
             )
         }
