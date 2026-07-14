@@ -19,6 +19,7 @@ class ResetLifeDestinationTest {
                 ResetLifeDestination.CustomLists,
                 ResetLifeDestination.Wellbeing,
                 ResetLifeDestination.WeeklyReview,
+                ResetLifeDestination.HabitDetail,
                 ResetLifeDestination.Onboarding,
             ),
             ResetLifeDestination.entries,

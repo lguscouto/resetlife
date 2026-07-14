@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.util.UUID
 
-class HabitRepository(private val dao: HabitDao) {
+open class HabitRepository(private val dao: HabitDao) {
     fun observeHabits(): Flow<List<Habit>> = dao.observeAll().map { list ->
         list.map { it.toDomain() }
     }
@@ -55,7 +55,9 @@ class HabitRepository(private val dao: HabitDao) {
         dao.update(entity.copy(active = false))
     }
 
-    fun observeLogs(habitId: String): Flow<List<HabitLog>> =
+    open suspend fun getHabit(id: String): Habit? = dao.get(id)?.toDomain()
+
+    open fun observeLogs(habitId: String): Flow<List<HabitLog>> =
         dao.observeLogsByHabit(habitId).map { list -> list.map { it.toDomain() } }
 
     fun observeAllLogsForDate(date: String): Flow<List<HabitLog>> =

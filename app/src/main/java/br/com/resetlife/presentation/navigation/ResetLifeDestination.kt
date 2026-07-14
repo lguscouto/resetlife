@@ -92,6 +92,13 @@ enum class ResetLifeDestination(
         isBottomTab = false,
         parentTab = Profile,
     ),
+    HabitDetail(
+        key = "habit_detail",
+        labelRes = R.string.habit_detail_title,
+        contentDescriptionRes = R.string.habit_detail_title,
+        icon = Icons.Filled.CheckCircle,
+        isBottomTab = false,
+    ),
     Onboarding(
         key = "onboarding",
         labelRes = R.string.onboarding_nav,

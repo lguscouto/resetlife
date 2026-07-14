@@ -36,6 +36,9 @@ import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModelFactory
 import br.com.resetlife.presentation.habit.HabitScreen
 import br.com.resetlife.presentation.habit.HabitViewModel
 import br.com.resetlife.presentation.habit.HabitViewModelFactory
+import br.com.resetlife.presentation.habit.HabitDetailScreen
+import br.com.resetlife.presentation.habit.HabitDetailViewModel
+import br.com.resetlife.presentation.habit.HabitDetailViewModelFactory
 import br.com.resetlife.presentation.environment.EnvironmentScreen
 import br.com.resetlife.presentation.environment.EnvironmentViewModel
 import br.com.resetlife.presentation.environment.EnvironmentViewModelFactory
@@ -71,12 +74,13 @@ fun ResetLifeApp(application: ResetLifeApplication) {
     }
 
     BackHandler(enabled = selectedKey != ResetLifeDestination.Today.key && selectedKey != ResetLifeDestination.Onboarding.key) {
-        // Se estiver num filho de hub, volta para o hub pai; senão, volta para Hoje
+        // Se estiver num filho de hub, volta para o hub pai; se estiver no detalhe do
+        // hábito, volta para a lista de hábitos; senão, volta para Hoje.
         val current = selectedDestination
-        selectedKey = if (!current.isBottomTab) {
-            (current.parentTab ?: ResetLifeDestination.Today).key
-        } else {
-            ResetLifeDestination.Today.key
+        selectedKey = when {
+            selectedKey.startsWith("habit_detail:") -> ResetLifeDestination.Habits.key
+            !current.isBottomTab -> (current.parentTab ?: ResetLifeDestination.Today).key
+            else -> ResetLifeDestination.Today.key
         }
     }
 
@@ -123,7 +127,26 @@ fun ResetLifeApp(application: ResetLifeApplication) {
             )
         },
     ) { innerPadding ->
-        when (selectedDestination) {
+        val habitDetailId = if (selectedKey.startsWith("habit_detail:")) {
+            selectedKey.removePrefix("habit_detail:")
+        } else {
+            null
+        }
+        if (habitDetailId != null) {
+            val detailViewModel: HabitDetailViewModel = viewModel(
+                key = "habit_detail_$habitDetailId",
+                factory = HabitDetailViewModelFactory(habitDetailId, application.habitStore),
+            )
+            val detailState by detailViewModel.uiState.collectAsState()
+            HabitDetailScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = detailState,
+                onBack = { selectedKey = ResetLifeDestination.Habits.key },
+                onToggleToday = habitViewModel::toggleToday,
+                onPause = habitViewModel::pause,
+                onResume = habitViewModel::resume,
+            )
+        } else when (selectedDestination) {
             ResetLifeDestination.Today -> TodayScreen(
                 modifier = Modifier.padding(innerPadding),
                 uiState = todayState,
@@ -203,6 +226,7 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onPause = habitViewModel::pause,
                 onResume = habitViewModel::resume,
                 onArchive = habitViewModel::archive,
+                onOpenDetail = { habit -> selectedKey = "habit_detail:${habit.id}" },
                 onShowAddDialog = habitViewModel::showAddDialog,
                 onHideAddDialog = habitViewModel::hideAddDialog,
                 onAddHabit = habitViewModel::addHabit,
@@ -241,6 +265,10 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onDeleteItem = customListsViewModel::deleteItem,
                 onDeleteList = customListsViewModel::deleteList,
             )
+
+            ResetLifeDestination.HabitDetail -> {
+                // Detalhe do hábito é renderizado pelo bloco `if (habitDetailId != null)` acima.
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package br.com.resetlife.presentation.habit
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +44,7 @@ fun HabitScreen(
     onPause: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onResume: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onArchive: (br.com.resetlife.domain.habit.Habit) -> Unit,
+    onOpenDetail: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onShowAddDialog: () -> Unit,
     onHideAddDialog: () -> Unit,
     onAddHabit: (String, HabitFrequency, HabitGoalType, Int?, String?) -> Unit,
@@ -93,6 +95,7 @@ fun HabitScreen(
                         onPause = onPause,
                         onResume = onResume,
                         onArchive = onArchive,
+                        onOpenDetail = onOpenDetail,
                     )
                 }
             }
@@ -116,8 +119,13 @@ private fun HabitRow(
     onPause: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onResume: (br.com.resetlife.domain.habit.Habit) -> Unit,
     onArchive: (br.com.resetlife.domain.habit.Habit) -> Unit,
+    onOpenDetail: (br.com.resetlife.domain.habit.Habit) -> Unit,
 ) {
-    ResetLifeSurface(modifier = Modifier.fillMaxWidth()) {
+    ResetLifeSurface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onOpenDetail(item.habit) },
+    ) {
         Column(modifier = Modifier.padding(ResetLifeSpacing.md)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

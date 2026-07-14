@@ -180,6 +180,20 @@
     <string name="habit_target">Meta (valor)</string>
     <string name="habit_unit">Unidade (ex: copos, min)</string>
 
+    <!-- Habit detail / streak -->
+    <string name="habit_detail_title">Detalhe do hábito</string>
+    <string name="habit_detail_subtitle">Acompanhe sua consistência ao longo dos dias.</string>
+    <string name="habit_streak_label">Sequência</string>
+    <string name="habit_streak_value">%1$d dias</string>
+    <string name="habit_completion_rate">Conclusão</string>
+    <string name="habit_completion_value">%1$d%%</string>
+    <string name="habit_calendar_title">Últimos 35 dias</string>
+    <string name="habit_calendar_done">Concluído</string>
+    <string name="habit_calendar_pending">Pendente</string>
+    <string name="habit_no_history">Sem registros ainda.</string>
+    <string name="habit_toggle_today">Concluir hoje</string>
+    <string name="back">Voltar</string>
+
     <!-- Life hub -->
     <string name="life_title">Vida</string>
     <string name="life_subtitle">Hábitos e bem-estar que sustentam o reset.</string>
