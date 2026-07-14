@@ -32,6 +32,9 @@ import br.com.resetlife.presentation.wellbeing.CheckInViewModelFactory
 import br.com.resetlife.presentation.weeklyreview.WeeklyReviewScreen
 import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModel
 import br.com.resetlife.presentation.weeklyreview.WeeklyReviewViewModelFactory
+import br.com.resetlife.presentation.habit.HabitScreen
+import br.com.resetlife.presentation.habit.HabitViewModel
+import br.com.resetlife.presentation.habit.HabitViewModelFactory
 
 @Composable
 fun ResetLifeApp(application: ResetLifeApplication) {
@@ -78,11 +81,15 @@ fun ResetLifeApp(application: ResetLifeApplication) {
             application.weeklyReviewStore,
         ),
     )
+    val habitViewModel: HabitViewModel = viewModel(
+        factory = HabitViewModelFactory(application.habitStore),
+    )
     val todayState by todayViewModel.uiState.collectAsState()
     val organizeState by organizeViewModel.uiState.collectAsState()
     val onboardingState by onboardingViewModel.uiState.collectAsState()
     val checkInState by checkInViewModel.uiState.collectAsState()
     val weeklyReviewState by weeklyReviewViewModel.uiState.collectAsState()
+    val habitState by habitViewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -152,6 +159,19 @@ fun ResetLifeApp(application: ResetLifeApplication) {
                 onNextWeekChanged = weeklyReviewViewModel::setNextWeekPriorities,
                 onHabitChanged = weeklyReviewViewModel::setHabitToAdjust,
                 onSave = weeklyReviewViewModel::save,
+            )
+
+            ResetLifeDestination.Habits -> HabitScreen(
+                modifier = Modifier.padding(innerPadding),
+                state = habitState,
+                onToggleToday = habitViewModel::toggleToday,
+                onQuantityChanged = habitViewModel::setQuantityToday,
+                onPause = habitViewModel::pause,
+                onResume = habitViewModel::resume,
+                onArchive = habitViewModel::archive,
+                onShowAddDialog = habitViewModel::showAddDialog,
+                onHideAddDialog = habitViewModel::hideAddDialog,
+                onAddHabit = habitViewModel::addHabit,
             )
         }
     }

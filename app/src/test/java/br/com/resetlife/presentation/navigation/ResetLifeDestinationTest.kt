@@ -11,6 +11,7 @@ class ResetLifeDestinationTest {
             listOf(
                 ResetLifeDestination.Today,
                 ResetLifeDestination.Organize,
+                ResetLifeDestination.Habits,
                 ResetLifeDestination.WeeklyReview,
                 ResetLifeDestination.Onboarding,
                 ResetLifeDestination.Wellbeing,

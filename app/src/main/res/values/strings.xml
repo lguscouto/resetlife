@@ -4,6 +4,9 @@
     <string name="today_nav_description">Abrir prioridades e ações de hoje</string>
     <string name="organize_nav">Organizar</string>
     <string name="organize_nav_description">Abrir projetos e tarefas</string>
+    <string name="habits_nav">Hábitos</string>
+    <string name="habits_nav_description">Abrir hábitos e rotinas</string>
+    <string name="weekly_review_nav">Revisão</string>
     <string name="today_title">Prioridades de hoje</string>
     <string name="today_subtitle">Escolha o próximo passo que importa.</string>
     <string name="active_priority_count">%1$d de %2$d prioridades ativas</string>
@@ -137,7 +140,6 @@
     <string name="mood_very_high">Muito alto</string>
 
     <!-- Weekly Review -->
-    <string name="weekly_review_nav">Revisão</string>
     <string name="weekly_review_nav_description">Revisão semanal</string>
     <string name="weekly_review_title">Revisão da semana</string>
     <string name="weekly_review_subtitle">Feche o ciclo e planeje a próxima semana.</string>
@@ -149,4 +151,26 @@
     <string name="weekly_review_next_week_label">Quais são as 3 prioridades da próxima semana?</string>
     <string name="weekly_review_habit_label">Qual hábito merece ajuste?</string>
     <string name="save_weekly_review">Salvar revisão</string>
+
+    <!-- Habits -->
+    <string name="habits_title">Hábitos</string>
+    <string name="habits_subtitle">Pequenos comportamentos que sustentam o reset.</string>
+    <string name="habits_empty">Nenhum hábito ainda. Adicione um para começar sua rotina.</string>
+    <string name="habit_add">Adicionar hábito</string>
+    <string name="habit_new_title">Novo hábito</string>
+    <string name="habit_name">Nome do hábito</string>
+    <string name="habit_save">Salvar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="habit_paused">Pausado</string>
+    <string name="habit_daily">Diário</string>
+    <string name="habit_pause">Pausar</string>
+    <string name="habit_resume">Retomar</string>
+    <string name="habit_archive">Arquivar</string>
+    <string name="habit_value">Valor de hoje</string>
+    <string name="habit_freq_daily">Todo dia</string>
+    <string name="habit_freq_weekdays">Dias úteis</string>
+    <string name="habit_goal_binary">Sim/Não</string>
+    <string name="habit_goal_quantity">Quantidade</string>
+    <string name="habit_target">Meta (valor)</string>
+    <string name="habit_unit">Unidade (ex: copos, min)</string>
 </resources>

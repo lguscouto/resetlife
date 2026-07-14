@@ -204,6 +204,7 @@ Uma funcionalidade só está pronta quando:
 - respeita acessibilidade, tema e privacidade;
 - não introduz dependências ou permissões desnecessárias;
 - documentação afetada foi atualizada.
+- for testada no emulador e validada
 
 ---
 
